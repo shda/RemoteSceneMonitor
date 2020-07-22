@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CommonSouzM.ApiMonitor;
 using Cysharp.Threading.Tasks;
 using Nancy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 
 public class HierarchySceneNancyModule  : NancyModule
@@ -18,59 +17,76 @@ public class HierarchySceneNancyModule  : NancyModule
         Get["/" , true] = async (x, y) =>
         {
             await UniTask.SwitchToMainThread();
-            var node = GetAllHierarchy();
+            var node = HierarchyTools.GetHierarchyActiveScene();
             
             string text = JsonConvert.SerializeObject(node, Formatting.Indented );
             return text;
         };
-    }
-    public HierarchyNode GetAllHierarchy()
-    {
-        var activeScene = SceneManager.GetActiveScene();
-        var rootObjects = activeScene.GetRootGameObjects();
-
-        HierarchyNode sceneNode = new HierarchyNode
-        {
-            isScene = true, 
-            instanceId = -1,
-            gameObject = null
-        };
-        GetHierarchy(sceneNode , rootObjects);
-
-        return sceneNode;
-    }
-
-    public void GetHierarchy(HierarchyNode node , IEnumerable<GameObject> childGameObjects)
-    {
-        List<HierarchyNode> childNodes = new List<HierarchyNode>();
         
-        if (childGameObjects != null)
+        Get["/hierarchy" , true] = async (x, y) =>
         {
-            foreach (var children in childGameObjects)
-            {
-                HierarchyNode nodeChild = new HierarchyNode()
-                {
-                    name = children.name,
-                    gameObject = children.gameObject,
-                    instanceId = children.GetInstanceID(),
-                    isScene = false,
-                };
-                
-                List<GameObject> childChild = new List<GameObject>();
+            await UniTask.SwitchToMainThread();
+            var node = HierarchyTools.GetHierarchyActiveScene();
+            string text = CreateHtmlTree(node);
+            return text;
+        };
+    }
 
-                for (int i = 0; i < children.transform.childCount; i++)
-                {
-                    var childTransform = children.transform.GetChild(i);
-                    childChild.Add(childTransform.gameObject);   
-                }
-                
-                GetHierarchy(nodeChild , childChild);
-                
-                childNodes.Add(nodeChild);
-            }
+    private string CreateHtmlTree(HierarchyNode node)
+    {
+        StringBuilder finalHtml = new StringBuilder();
+        finalHtml.Append("<ul>");
+        {
+            CreateHtmlNode(node , finalHtml);
+        }
+        finalHtml.Append("</ul>");
+
+        finalHtml.AppendLine(ClickFunction());
+        
+        return finalHtml.ToString();
+    }
+
+    private void CreateHtmlNode(HierarchyNode node , StringBuilder sb)
+    {
+        StringBuilder nodeBuilder = new StringBuilder();
+
+        string startLine = $"<li><span class=\"caret\">{node.name}</span>";
+        if (node.gameObject == null || !node.gameObject.activeInHierarchy)
+        {
+            startLine = $"<li><span class=\"caret\" style=\"color:#AAAAAA\";>{node.name}</span>";
         }
 
-        node.childrens = childNodes.ToArray();
+        nodeBuilder.Append(startLine);
+        {
+            if (node.childrens.Any())
+            {
+                nodeBuilder.AppendLine("<ul class=\"nested\">");
+                {
+                    foreach (var hierarchyNode in node.childrens)
+                    {
+                        CreateHtmlNode(hierarchyNode , nodeBuilder);
+                    }
+                }
+                nodeBuilder.AppendLine("</ul>");
+            }
+        }
+        nodeBuilder.Append($"</li>");
+        sb.AppendLine(nodeBuilder.ToString());
     }
-    
+
+    private string ClickFunction()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("<script>");
+        sb.AppendLine("var toggler = document.getElementsByClassName(\"caret\");");
+        sb.AppendLine("var i;");
+        sb.AppendLine("for (i = 0; i < toggler.length; i++) {");
+        sb.AppendLine("toggler[i].addEventListener(\"click\", function() {");
+        sb.AppendLine("this.parentElement.querySelector(\".nested\").classList.toggle(\"active\");");
+        sb.AppendLine("this.classList.toggle(\"caret-down\");");
+        sb.AppendLine("});");
+        sb.AppendLine("</script>");
+
+        return sb.ToString();
+    }
 }

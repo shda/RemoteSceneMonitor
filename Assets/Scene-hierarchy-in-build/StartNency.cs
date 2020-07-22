@@ -25,6 +25,6 @@ public class StartNency : MonoBehaviour
         
         _nancyHost.Start();
 
-        Process.Start("http://localhost:8888/nancy/");
+        Process.Start("http://localhost:8888/nancy/hierarchy/");
     }
 }
