@@ -1539,7 +1539,7 @@
         </member>
         <member name="P:Nancy.Conventions.NancyConventions.ViewLocationConventions">
             <summary>
-            Gets or sets the conventions for locating view templates
+            Gets or sets the conventions for locating view htmlTemplates
             </summary>
         </member>
         <member name="P:Nancy.Conventions.NancyConventions.StaticContentsConventions">
@@ -10031,7 +10031,7 @@
         <member name="T:Nancy.ViewEngines.SuperSimpleViewEngine.IViewEngineHost">
             <summary>
             Provides the view engine with utility functions for
-            encoding, locating partial view templates etc.
+            encoding, locating partial view htmlTemplates etc.
             </summary>
         </member>
         <member name="P:Nancy.ViewEngines.SuperSimpleViewEngine.IViewEngineHost.Context">
