@@ -1,14 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CommonSouzM.ApiMonitor;
 using Cysharp.Threading.Tasks;
 using Nancy;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
+using UnityEngine;
 
 public class HierarchySceneNancyModule  : NancyModule
 {
@@ -19,7 +13,7 @@ public class HierarchySceneNancyModule  : NancyModule
             await UniTask.SwitchToMainThread();
             var node = HierarchyTools.GetHierarchyActiveScene();
             
-            string text = JsonConvert.SerializeObject(node, Formatting.Indented );
+            string text = JsonUtility.ToJson(node);
             return text;
         };
         
@@ -39,8 +33,8 @@ public class HierarchySceneNancyModule  : NancyModule
         {
             CreateHtmlNode(node , finalHtml);
         }
+        
         finalHtml.Append("</ul>");
-
         finalHtml.AppendLine(ClickFunction());
         
         return finalHtml.ToString();
