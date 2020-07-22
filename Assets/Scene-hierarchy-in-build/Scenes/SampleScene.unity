@@ -975,7 +975,7 @@ GameObject:
   - component: {fileID: 757444399}
   - component: {fileID: 757444400}
   m_Layer: 0
-  m_Name: TestNency
+  m_Name: Scene-hierarchy-in-build
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1007,6 +1007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541d25f54eac5f549859480da76aa00e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  treeHtmlFile: {fileID: 4900000, guid: 01ed10cecfe41ca4f8a7fd41a3fc0afc, type: 3}
 --- !u!1 &782176697
 GameObject:
   m_ObjectHideFlags: 0
