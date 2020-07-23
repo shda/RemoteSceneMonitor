@@ -61,6 +61,15 @@
         }
         return false;
     }
+	function OpenId( id )
+	{
+//document.getElementById('frame2').
+		//window.open(document.getElementById("frame2").href, id);
+		//document.getElementById('frame2').contentWindow.location.reload();
+		//parent.frames['frame2'].location.reload();
+		//parent.frames['frame2'].location.src = "./hierarchy";
+		window.open("id" + id  , "frame2");
+	}
 </script>
 <div class="treeview">
     {treeview_insert}

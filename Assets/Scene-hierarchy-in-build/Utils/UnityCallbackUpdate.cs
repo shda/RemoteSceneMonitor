@@ -31,13 +31,14 @@ namespace Assets.AR_RPG.Scripts.Utils
             }
         }
 
-        public static async Task OnUpdateFromMainThread(Action onUpdate)
+        public static async Task OnUpdateFromMainThreadAsync(Action onUpdate)
         {
             bool waitThread = true;
             void MainThreadAction()
             {
                 onUpdate?.Invoke();
                 waitThread = false;
+                OnUpdate -= MainThreadAction;
             }
 
             OnUpdate += MainThreadAction;

@@ -2,30 +2,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public class SceneHierarchyData
+{
+    public Dictionary<int , GameObject> gameobjectsDictonary = new Dictionary<int, GameObject>();
+    public HierarchyNode rootNode;
+}
+
 public class HierarchyTools
 {
-    public static HierarchyNode GetHierarchyActiveScene()
+    public static SceneHierarchyData GetHierarchyActiveScene()
     {
         var activeScene = SceneManager.GetActiveScene();
         return GetHierarchyByScene(activeScene);
     }
     
-    public static HierarchyNode GetHierarchyByScene(Scene scene)
+    public static SceneHierarchyData GetHierarchyByScene(Scene scene)
     {
+        SceneHierarchyData sceneHierarchyData = new SceneHierarchyData();
+        
         var rootObjects = scene.GetRootGameObjects();
-
         HierarchyNode sceneNode = new HierarchyNode
         {
             isScene = true, 
             instanceId = -1,
             gameObject = null
         };
-        GetHierarchy(sceneNode , rootObjects);
-
-        return sceneNode;
+        
+        GetHierarchy(sceneNode , rootObjects , sceneHierarchyData);
+        sceneHierarchyData.rootNode = sceneNode;
+        
+        return sceneHierarchyData;
     }
 
-    public static void GetHierarchy(HierarchyNode node , IEnumerable<GameObject> childGameObjects)
+    public static void GetHierarchy(HierarchyNode node , IEnumerable<GameObject> childGameObjects , SceneHierarchyData sceneHierarchyData)
     {
         List<HierarchyNode> childNodes = new List<HierarchyNode>();
         
@@ -33,6 +42,8 @@ public class HierarchyTools
         {
             foreach (var children in childGameObjects)
             {
+                sceneHierarchyData.gameobjectsDictonary[children.GetInstanceID()] = children;
+                
                 HierarchyNode nodeChild = new HierarchyNode()
                 {
                     name = children.name,
@@ -49,8 +60,7 @@ public class HierarchyTools
                     childChild.Add(childTransform.gameObject);   
                 }
                 
-                GetHierarchy(nodeChild , childChild);
-                
+                GetHierarchy(nodeChild , childChild , sceneHierarchyData);
                 childNodes.Add(nodeChild);
             }
         }

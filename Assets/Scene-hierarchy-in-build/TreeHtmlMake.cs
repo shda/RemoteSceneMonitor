@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public static class TreeHtmlMake
 {
@@ -25,10 +26,25 @@ public static class TreeHtmlMake
     {
         StringBuilder nodeBuilder = new StringBuilder();
 
-        // string startLine = $"<li><span class=\"caret\">{node.name}</span>";
+        bool isDisable = node.gameObject == null || !node.gameObject.activeInHierarchy;
+        Color colorLine = Color.black;
+
+        if (isDisable)
+        {
+            colorLine = Color.gray;
+        }
+ 
+        string  colorLineHtml = ColorUtility.ToHtmlStringRGB(colorLine);
+        
         string nameObject = node.name;
         int id = node.instanceId;
-        string startLine = $"<li><div><p><a href=\"#\" class=\"sc\" onclick=\"return UnHide(this)\">&#9660;</a><a href=\"./{id}\">{nameObject}</a></p></div>";
+        string startLine = $"<li>" +
+                           $"<div>" +
+                                $"<p>" +
+                                    $"<a href=\"#\" class=\"sc\" onclick=\"return UnHide(this)\">&#9660;</a>" +
+                                    $"<a onclick=\"return OpenId({id})\" style=\"color:#{colorLineHtml}\" >{nameObject}</a>" +
+                                $"</p>" +
+                           $"</div>";
         
         /*
         if (node.gameObject == null || !node.gameObject.activeInHierarchy)

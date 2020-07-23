@@ -4,10 +4,12 @@ namespace Http
 {
     public class HttpServerContext
     {
-        private HttpListenerContext HttpListenerContext { get;}
+        public string AbsolutePath { get;}
+        public HttpListenerContext HttpListenerContext { get;}
         public HttpServerContext(HttpListenerContext httpListenerContext)
         {
             HttpListenerContext = httpListenerContext;
+            AbsolutePath = HttpListenerContext.Request.Url.AbsolutePath;
         }
 
         public HttpListenerResponse GetResponse()
