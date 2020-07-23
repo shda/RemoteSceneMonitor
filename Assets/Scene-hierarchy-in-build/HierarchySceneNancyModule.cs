@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-//using Cysharp.Threading.Tasks;
-using Nancy;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
-public class HierarchySceneNancyModule  : NancyModule
+
+public class HierarchySceneNancyModule  
 {
     public static HierarchySceneNancyModule Instance { get; private set; }
 

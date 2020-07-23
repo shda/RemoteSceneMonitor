@@ -8,8 +8,6 @@ public class SceneHierarchyInBuild : MonoBehaviour
 {
     [SerializeField]
     private TextAsset treeHtmlFile;
-    
-    //private NancyHost _nancyHost;
 
     private HttpServer _httpServer;
     
