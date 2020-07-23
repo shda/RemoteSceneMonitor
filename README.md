@@ -1,2 +1,2 @@
-# Remote scene object monitor in Unity.
+# Web interface for debug object to scene Unity.
 ![](/Images/screenshot.png)
