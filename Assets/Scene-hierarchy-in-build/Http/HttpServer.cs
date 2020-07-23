@@ -1,8 +1,6 @@
 using System;
 using System.Net;
-using System.Threading;
-using CinemaLib.Utils;
-using UnityEditor.VersionControl;
+using System.Threading.Tasks;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
@@ -10,74 +8,67 @@ namespace Http
 {
     public class HttpServer : IDisposable
     {
-        private HttpListener listener;
-        private readonly int port;
+        private HttpListener _listener;
+        private int _port;
+        
+        private Func<HttpServerContext , Task<string>> _onResponseHandler;
 
-        public HttpServer(int port)
+        public HttpServer(int port , Func<HttpServerContext , Task<string>> onResponseHandler)
         {
-            this.port = port;
+            _port = port;
+            _onResponseHandler = onResponseHandler;
         }
 
-        public void Start()
+        public void StartAsync()
         {
-            ThreadsController.StartThread(WorkThread);
+            Task.Run(WorkThreadAsync);
         }
 
-        private void WorkThread(object obj)
+        private void WorkThreadAsync()
         {
             try
             {
-                listener = new HttpListener();
-                listener.Prefixes.Add("http://*:" + port + "/");
-                listener.Start();
+                _listener = new HttpListener();
+                _listener.Prefixes.Add("http://*:" + _port + "/");
+                _listener.Start();
             }
             catch (Exception ex)
             {
                 Debug.LogException(ex);
             }
 
-            while (listener.IsListening)
+            while (_listener != null && _listener.IsListening)
             {
-                try
+                HttpListenerContext context = _listener?.GetContext();
+                HttpServerContext serverContext = new HttpServerContext(context);
+                Task.Run(() =>
                 {
-                    HttpListenerContext context = listener.GetContext();
-                    Process(context);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
+                    WorkHandle(serverContext);
+                });
             }
         }
-    
-        private void Process(HttpListenerContext context)
+        private async void WorkHandle(HttpServerContext listenerContext)
         {
-            //Task.Run()
-            
-            ThreadsController.StartThread(UploadStream, context);
-        }
-
-        private void UploadStream(object obj)
-        {
-            HttpListenerContext context = (HttpListenerContext)obj;
-            string filename = context.Request.Url.AbsolutePath;
-            Debug.Log(filename);
-
-            HttpListenerResponse response = context.Response;
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(
-                "<HTML><BODY> " + "Is Run!" + "</BODY></HTML>");
-       
-            response.ContentLength64 = buffer.Length;
-            using (System.IO.Stream output = response.OutputStream)
+            if (_onResponseHandler != null)
             {
-                output.Write(buffer, 0, buffer.Length);
-                output.Close();
+                var returnHandler = await _onResponseHandler(listenerContext);
+                
+                HttpListenerResponse response = listenerContext.GetResponse();
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(returnHandler);
+                response.ContentLength64 = buffer.Length;
+                using (System.IO.Stream output = response.OutputStream)
+                {
+                    await output.WriteAsync(buffer, 0, buffer.Length);
+                    output.Close();
+                }
             }
         }
 
         public void Dispose()
         {
-            listener?.Close();
+            _listener?.Stop();
+            _listener?.Close();
+            _listener = null;
         }
     }
 }

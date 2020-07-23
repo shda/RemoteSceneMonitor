@@ -28,13 +28,12 @@ namespace CinemaLib.Utils
             if (OnThread == null)
                 return null;
 
-            var thread = new Thread(o =>
+            var thread = new Thread(o => { OnThread(o); })
             {
-                OnThread(o);
-            });
+                IsBackground = true,
+                Name = ++indexThread + "ThreadsControllerThread"
+            };
 
-            thread.IsBackground = true;
-            thread.Name = ++indexThread + "ThreadsControllerThread";
             thread.Start(objInThread);
 
             lock (synx)

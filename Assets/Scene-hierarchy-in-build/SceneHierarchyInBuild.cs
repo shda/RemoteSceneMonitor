@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using CinemaLib.Utils;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
+using Assets.AR_RPG.Scripts.Utils;
 using Http;
-using Nancy.Hosting.Self;
 using UnityEngine;
 
 public class SceneHierarchyInBuild : MonoBehaviour
@@ -18,42 +15,32 @@ public class SceneHierarchyInBuild : MonoBehaviour
     
     private void Awake()
     {
-        /*
+        UnityCallbackUpdate.CreateInstanceIfNeed();
         
-        */
-        //var config = new HostConfiguration();
-       // config.RewriteLocalhost = true;
+        _httpServer = new HttpServer(1234 ,OnResponseHandler);
+        _httpServer.StartAsync();
 
-        /*
-        _nancyHost = new NancyHost(config ,
-            new Uri("http://192.168.1.35:8888/nancy/"),
-            new Uri("http://127.0.0.1:8898/nancy/"),
-            new Uri("http://localhost:8889/nancytoo/"));
-        */
-        
-        _httpServer = new HttpServer(1234);
-        _httpServer.Start();
-        
-        /*
-        _nancyHost = new NancyHost(config , new Uri("http://localhost:1234"));
-        
-        HierarchySceneNancyModule.SetTemplates(new Dictionary<string, string>()
-        {
-            {TemplateFileNames.treeHtmlFile, treeHtmlFile.text},
-        });
-        */
-        
-       // _nancyHost.Start();
+
 #if UNITY_EDITOR
         Process.Start("http://localhost:1234/nancy/hierarchy/");
 #endif
     }
 
+    private async Task<string> OnResponseHandler(HttpServerContext arg)
+    {
+        string finalHtml = "";
+        await UnityCallbackUpdate.OnUpdateFromMainThread(() =>
+        {
+            HierarchyNode node = HierarchyTools.GetHierarchyActiveScene();
+            finalHtml = TreeHtmlMake.InsertCodeInHtml(node, treeHtmlFile.text);
+        });
+  
+        return finalHtml;
+    }
+
+
     private void OnDestroy()
     {
-        //_nancyHost.Dispose();
-        //_nancyHost = null;
-        
         _httpServer.Dispose();
         _httpServer = null;
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Cysharp.Threading.Tasks;
+//using Cysharp.Threading.Tasks;
 using Nancy;
 using UnityEngine;
 
@@ -20,6 +20,7 @@ public class HierarchySceneNancyModule  : NancyModule
     {
         Instance = this;
         
+        /*
         Get["/" , true] = async (x, y) =>
         {
             StringBuilder sb = new StringBuilder();
@@ -50,5 +51,6 @@ public class HierarchySceneNancyModule  : NancyModule
 
             return html;
         };
+        */
     }
 }
