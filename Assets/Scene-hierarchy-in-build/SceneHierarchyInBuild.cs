@@ -64,21 +64,7 @@ public class SceneHierarchyInBuild : MonoBehaviour
                         {
                             if (go != null)
                             {
-                                string updateDelayString =
-                                    updateDelay.ToString("0.00", CultureInfo.InvariantCulture);
-                                    
-                                sb.AppendLine($"<meta http-equiv=\"refresh\" content=\"{updateDelayString}\">");
-
-                                Vector3 position = go.transform.position;
-                                Vector3 rotation = go.transform.rotation.eulerAngles;
-                                Vector3 scale = go.transform.localScale;
-                                sb.AppendLine($"<p>{go.name}</p>");
-                                sb.AppendLine($"<p>Transform</p>");
-                                sb.AppendLine(
-                                    $"<p>Position: X = {position.x} Y = {position.y} Z = {position.z}</p>");
-                                sb.AppendLine(
-                                    $"<p>Rotation: X = {rotation.x} Y = {rotation.y} Z = {rotation.z}</p>");
-                                sb.AppendLine($"<p>Local scale: X = {scale.x} Y = {scale.y} Z = {scale.z}</p>");
+                                CreateInformationStrings(sb, go);
                             }
                             else
                             {
@@ -107,6 +93,37 @@ public class SceneHierarchyInBuild : MonoBehaviour
         }
 
         return finalHtml;
+    }
+
+    private void CreateInformationStrings(StringBuilder sb, GameObject go)
+    {
+        string updateDelayString =
+            updateDelay.ToString("0.00", CultureInfo.InvariantCulture);
+
+        sb.AppendLine($"<meta http-equiv=\"refresh\" content=\"{updateDelayString}\">");
+
+        Vector3 position = go.transform.position;
+        Vector3 rotation = go.transform.rotation.eulerAngles;
+        Vector3 scale = go.transform.localScale;
+
+        
+        
+        sb.AppendLine($"<p>{go.name}</p>");
+        sb.AppendLine($"<p>Transform</p>");
+        sb.AppendLine($"<p>Position: X = {position.x} Y = {position.y} Z = {position.z}</p>");
+        sb.AppendLine($"<p>Rotation: X = {rotation.x} Y = {rotation.y} Z = {rotation.z}</p>");
+        sb.AppendLine($"<p>Local scale: X = {scale.x} Y = {scale.y} Z = {scale.z}</p>");
+        
+        var getComponents = go.GetComponents<MonoBehaviour>();
+
+        sb.AppendLine($"<p>Components:</p>");
+        
+        foreach (var component in getComponents)
+        {
+            var type = component.GetType();
+            sb.AppendLine($"<p>{component.enabled} - {type.Name}</p>");
+        }
+        
     }
 
 
