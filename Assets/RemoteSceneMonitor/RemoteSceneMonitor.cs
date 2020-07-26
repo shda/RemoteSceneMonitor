@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-public class SceneHierarchyInBuild : MonoBehaviour
+public class RemoteSceneMonitor : MonoBehaviour
 {
     private const string rootResourceFolder = "SceneHierarchyResources";
     
