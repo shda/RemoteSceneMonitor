@@ -126,51 +126,10 @@
       };
       xhr.send();
     };
-
-    function CreateNodeThree(jsonNodes){
-      var zNodes;
-      var sceneNode = { id:threeNode.instanceId, pId:0, name:jsonNodes.name};
-
-      CreateNode(jsonNodes , arrayNodes);
-    }
-
-    function CreateNode(threeNode , array){
-      var zNodesChild;
-      var zNode = { id:threeNode.instanceId, pId:0, name:"leaf node 03"};
-    }
-
-
-      function setEdit() {
-    			var zTree = $.fn.zTree.getZTreeObj("tree"),
-    			remove = $("#remove").attr("checked"),
-    			rename = $("#rename").attr("checked"),
-    			removeTitle = $.trim($("#removeTitle").get(0).value),
-    			renameTitle = $.trim($("#renameTitle").get(0).value);
-    			zTree.setting.edit.showRemoveBtn = remove;
-    			zTree.setting.edit.showRenameBtn = rename;
-    			zTree.setting.edit.removeTitle = removeTitle;
-    			zTree.setting.edit.renameTitle = renameTitle;
-    			showCode(['setting.edit.showRemoveBtn = ' + remove, 'setting.edit.showRenameBtn = ' + rename,
-    				'setting.edit.removeTitle = "' + removeTitle +'"', 'setting.edit.renameTitle = "' + renameTitle + '"']);
-    	}
-
+    
     $(document).ready(function () {
-      /*
-      var t = $("#tree");
-      t = $.fn.zTree.init(t, setting, zNodes);
-      demoIframe = $("#testIframe");
-      demoIframe.bind("load", loadReady);
-      var zTree = $.fn.zTree.getZTreeObj("tree");
-      zTree.selectNode(zTree.getNodeByParam("id", 101));
-      */
-    //  var zTree = $("#tree");
-
       getJSON("/json/hierarhy" , function(err , data){
         if(err === null){
-          //alert(data.rootNode.lenght);
-          //$.fn.zTree.init($("#treeDemo"), setting, data.rootNode);
-
-        //  CreateNodeThree(data.rootNode);
           var t = $("#tree");
           t = $.fn.zTree.init(t, setting, data.rootNode);
           setEdit();
