@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 
 public class ResourceFileStorage
 {
-    private Dictionary<string , string> _dictCatch = new Dictionary<string, string>();
+    private Dictionary<string , FileReadResult> _dictCatch = new Dictionary<string, FileReadResult>();
     private string _rootResourceFolder;
 
     public ResourceFileStorage(string rootResourceFolder)
@@ -15,18 +15,17 @@ public class ResourceFileStorage
     {
         string fullPath = _rootResourceFolder + "/" + fileName;
         
+        /*
         if (_dictCatch.ContainsKey(fullPath))
         {
-            return new FileReadResult()
-            {
-                text = _dictCatch[fullPath],
-            };
+            return _dictCatch[fullPath];
         }
+        */
         
         var fileResult = await ReadResourceFileUtils.ReadFileFromStreamingAssetsWithPlatform(fullPath);
         if (!fileResult.IsError)
         {
-            _dictCatch[fullPath] = fileResult.text;
+            _dictCatch[fullPath] = fileResult;
         }
 
         return fileResult;

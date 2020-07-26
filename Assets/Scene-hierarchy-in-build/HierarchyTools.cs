@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneHierarchyData
 {
+    [JsonIgnore]
     public Dictionary<int , GameObject> gameobjectsDictonary = new Dictionary<int, GameObject>();
     public HierarchyNode rootNode;
 }
@@ -24,8 +27,10 @@ public class HierarchyTools
         HierarchyNode sceneNode = new HierarchyNode
         {
             isScene = true, 
-            instanceId = -1,
-            gameObject = null
+            id = 0,
+            pId = -1,
+            gameObject = null,
+            name = scene.name,
         };
         
         GetHierarchy(sceneNode , rootObjects , sceneHierarchyData);
@@ -48,7 +53,8 @@ public class HierarchyTools
                 {
                     name = children.name,
                     gameObject = children.gameObject,
-                    instanceId = children.GetInstanceID(),
+                    id = children.GetInstanceID(),
+                    pId = node.id,
                     isScene = false,
                 };
                 
@@ -65,6 +71,13 @@ public class HierarchyTools
             }
         }
 
-        node.childrens = childNodes.ToArray();
+        if (childNodes.Any())
+        {
+            node.children = childNodes.ToArray();
+        }
+        else
+        {
+            node.children = null;
+        }
     }
 }

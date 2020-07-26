@@ -37,7 +37,7 @@ public static class TreeHtmlMake
         string  colorLineHtml = ColorUtility.ToHtmlStringRGB(colorLine);
         
         string nameObject = node.name;
-        int id = node.instanceId;
+        int id = node.id;
         string startLine = $"<li>" +
                            $"<div>" +
                                 $"<p>" +
@@ -55,11 +55,11 @@ public static class TreeHtmlMake
 
         nodeBuilder.Append(startLine);
         {
-            if (node.childrens.Any())
+            if (node.children.Any())
             {
                 nodeBuilder.AppendLine("<ul class=\"cl\">");
                 {
-                    foreach (var hierarchyNode in node.childrens)
+                    foreach (var hierarchyNode in node.children)
                     {
                         CreateHtmlNode(hierarchyNode , nodeBuilder);
                     }

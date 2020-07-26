@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Http;
+using Newtonsoft.Json;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -61,38 +62,35 @@ public class SceneHierarchyInBuild : MonoBehaviour
 
     private async UniTask<ResponseData> CreateRequest(HttpServerContext context)
     {
-        ResponseData responseData = new ResponseData();
-        
+        ResponseData responseData = new ResponseData {data = new byte[0]};
+
         string absolutePath = context.AbsolutePath;
         
         Debug.Log(absolutePath);
 
-        string filePath = absolutePath.Remove(0, 1);
-
-        if (string.IsNullOrEmpty(filePath))
-        {
-            filePath = "index.html";
-        }
-        
-        FileReadResult fileReadResult = await _resourceFileStorage.ReadFileFromResource(filePath);
-
-        if (!fileReadResult.IsError)
-        {
-            responseData.data = fileReadResult.data;
-        }
-        else
-        {
-            Debug.LogError($"Error load file - {filePath}");
-        }
-
-        
-        /*
-        if (absolutePath.StartsWith("/hierarchy"))
+        if(absolutePath.StartsWith("/json/hierarhy"))
         {
             await UniTask.SwitchToMainThread();
-            
             _lastData = HierarchyTools.GetHierarchyActiveScene();
-            finalHtml = TreeHtmlMake.InsertCodeInHtml(_lastData.rootNode, treeHtmlFile.text);
+            
+            var json =  JsonConvert.SerializeObject(_lastData , Formatting.Indented);
+            responseData.data = Encoding.UTF8.GetBytes(json);
+        }
+        else if (absolutePath.StartsWith("/action/move/"))
+        {
+            string parsing = absolutePath.Replace("/action/move/", "");
+            string[] paramsUrl = parsing.Split('/');
+            var idMove = int.Parse(paramsUrl[0]);
+            var idTarget = int.Parse(paramsUrl[1]);
+
+            await MoveChildren(idMove , idTarget);
+        }
+        else if (absolutePath.StartsWith("/action/delete/"))
+        {
+            string parsing = absolutePath.Replace("/action/delete/", "");
+            var idDelete = int.Parse(parsing);
+            await DeleteGameObjectById(idDelete);
+            
         }
         else if (absolutePath.StartsWith("/id"))
         {
@@ -118,24 +116,66 @@ public class SceneHierarchyInBuild : MonoBehaviour
                 }
             }
             
-            finalHtml = sb.ToString();
+            responseData.data = Encoding.UTF8.GetBytes(sb.ToString());
         }
-        
         else
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<html>");
+            string filePath = absolutePath.Remove(0, 1);
             
-            sb.AppendLine("<frameset cols=\"30%,70%\">");
-            sb.AppendLine("<frame src=\"./hierarchy\" name=\"frame1\">");
-            sb.AppendLine($"<frame src=\"./hierarchy\" name=\"frame2\">");
-            sb.AppendLine("</frameset>");
-            sb.AppendLine("</html>");
-            finalHtml = sb.ToString();
+            if (string.IsNullOrEmpty(filePath))
+            {
+                filePath = "index.html";
+            }
+            
+            FileReadResult fileReadResult = await _resourceFileStorage.ReadFileFromResource(filePath);
+
+            if (!fileReadResult.IsError)
+            {
+                responseData.data = fileReadResult.data;
+            }
+            else
+            {
+                Debug.LogError($"Error load file - {filePath}");
+                responseData.data = Encoding.UTF8.GetBytes($"Error load file {filePath}");
+            }
         }
-        */
 
         return responseData;
+    }
+
+    private async UniTask DeleteGameObjectById(int idDeleteObject)
+    {
+        await UniTask.SwitchToMainThread();
+        
+        var hierarchy = HierarchyTools.GetHierarchyActiveScene();
+        hierarchy.gameobjectsDictonary.TryGetValue(idDeleteObject, out var deleteObject);
+        if (deleteObject != null)
+        {
+            DestroyImmediate(deleteObject.gameObject);
+        }
+    }
+
+    private async UniTask MoveChildren(int idMove, int idTarget)
+    {
+        await UniTask.SwitchToMainThread();
+        
+        var hierarchy = HierarchyTools.GetHierarchyActiveScene();
+
+        hierarchy.gameobjectsDictonary.TryGetValue(idMove, out var moveObject);
+        hierarchy.gameobjectsDictonary.TryGetValue(idTarget, out var targetObject);
+        
+        
+        if(moveObject != null)
+        {
+            if (targetObject != null)
+            {
+                moveObject.transform.parent = targetObject.transform;
+            }
+            else
+            {
+                moveObject.transform.parent = null;
+            }
+        }
     }
 
     private void CreateInformationStrings(StringBuilder sb, GameObject go)
