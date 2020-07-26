@@ -15,7 +15,6 @@ public class SceneHierarchyInBuild : MonoBehaviour
     private const string rootResourceFolder = "SceneHierarchyResources";
     
     [SerializeField]
-    private TextAsset treeHtmlFile;
     private HttpServer _httpServer;
 
     private SceneHierarchyData _lastData;
@@ -68,7 +67,7 @@ public class SceneHierarchyInBuild : MonoBehaviour
         
         Debug.Log(absolutePath);
 
-        if(absolutePath.StartsWith("/json/hierarhy"))
+        if(absolutePath.StartsWith("/json/hierarchy"))
         {
             await UniTask.SwitchToMainThread();
             _lastData = HierarchyTools.GetHierarchyActiveScene();

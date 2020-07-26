@@ -61,24 +61,27 @@
         }
 			},
       callback: {
-        beforeClick: function (treeId, treeNode) {
-          var zTree = $.fn.zTree.getZTreeObj("tree");
-          if (treeNode.isParent) {
-          //  zTree.expandNode(treeNode);
-            window.open("id" + treeNode.id  , "testIframe");
-            return false;
-          } else {
-            //demoIframe.attr("src", treeNode.file + ".html");
-            window.open("id" + treeNode.id  , "testIframe");
-            return true;
-          }
-        },
+        beforeClick: beforeClick,
         beforeDrag: beforeDrag,
 				beforeDrop: beforeDrop,
 
 				onRemove: onRemove,
       }
     };
+
+    function beforeClick(treeId, treeNode)
+    {
+      var zTree = $.fn.zTree.getZTreeObj("tree");
+      if (treeNode.isParent) {
+      //  zTree.expandNode(treeNode);
+        window.open("id" + treeNode.id  , "testIframe");
+        return false;
+      } else {
+        //demoIframe.attr("src", treeNode.file + ".html");
+        window.open("id" + treeNode.id  , "testIframe");
+        return true;
+      }
+    }
 
     function onRemove(e, treeId, treeNode) {
 
@@ -126,19 +129,17 @@
       };
       xhr.send();
     };
-    
+
     $(document).ready(function () {
-      getJSON("/json/hierarhy" , function(err , data){
+      getJSON("/json/hierarchy" , function(err , data){
         if(err === null){
           var t = $("#tree");
           t = $.fn.zTree.init(t, setting, data.rootNode);
           setEdit();
-          //t.setting.edit.drag.isMove = true;
         }
       })
     });
 
-    //-->
   </SCRIPT>
 </HEAD>
 
