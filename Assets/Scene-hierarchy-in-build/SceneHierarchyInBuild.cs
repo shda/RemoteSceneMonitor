@@ -1,20 +1,24 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using Assets.AR_RPG.Scripts.Utils;
+using Cysharp.Threading.Tasks;
 using Http;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public class SceneHierarchyInBuild : MonoBehaviour
 {
+    private const string rootResourceFolder = "SceneHierarchyResources";
+    
     [SerializeField]
     private TextAsset treeHtmlFile;
     private HttpServer _httpServer;
 
-    private SceneHierarchyData lastData;
+    private SceneHierarchyData _lastData;
+    private ResourceFileStorage _resourceFileStorage;
 
     [SerializeField]
     private int port = 1234;
@@ -23,32 +27,72 @@ public class SceneHierarchyInBuild : MonoBehaviour
     
     private void Awake()
     {
-        UnityCallbackUpdate.CreateInstanceIfNeed();
+        _resourceFileStorage = new ResourceFileStorage(rootResourceFolder);
         
         _httpServer = new HttpServer(port ,OnResponseHandler);
         _httpServer.StartAsync();
-
 
 #if UNITY_EDITOR
         Process.Start($"http://localhost:{port}");
 #endif
     }
     
-    private async Task<string> OnResponseHandler(HttpServerContext context)
+    private async Task<ResponseData> OnResponseHandler(HttpServerContext context)
     {
-        string finalHtml = "";
+        ResponseData responseData = null;
+        
+        try
+        {
+            responseData = await CreateRequest(context);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(e.Message);
+            sb.AppendLine(e.StackTrace);
+
+            Debug.LogException(e);
+        }
+
+        return responseData;
+    }
+
+    private async UniTask<ResponseData> CreateRequest(HttpServerContext context)
+    {
+        ResponseData responseData = new ResponseData();
+        
         string absolutePath = context.AbsolutePath;
         
-        
         Debug.Log(absolutePath);
+
+        string filePath = absolutePath.Remove(0, 1);
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            filePath = "index.html";
+        }
         
+        FileReadResult fileReadResult = await _resourceFileStorage.ReadFileFromResource(filePath);
+
+        if (!fileReadResult.IsError)
+        {
+            responseData.data = fileReadResult.data;
+        }
+        else
+        {
+            Debug.LogError($"Error load file - {filePath}");
+        }
+
+        
+        /*
         if (absolutePath.StartsWith("/hierarchy"))
         {
-            await UnityCallbackUpdate.OnUpdateFromMainThreadAsync(() =>
-            {
-                lastData = HierarchyTools.GetHierarchyActiveScene();
-                finalHtml = TreeHtmlMake.InsertCodeInHtml(lastData.rootNode, treeHtmlFile.text);
-            });
+            await UniTask.SwitchToMainThread();
+            
+            _lastData = HierarchyTools.GetHierarchyActiveScene();
+            finalHtml = TreeHtmlMake.InsertCodeInHtml(_lastData.rootNode, treeHtmlFile.text);
         }
         else if (absolutePath.StartsWith("/id"))
         {
@@ -56,21 +100,19 @@ public class SceneHierarchyInBuild : MonoBehaviour
             StringBuilder sb = new StringBuilder();
             if (int.TryParse(idStr, out int idInt))
             {
-                if (lastData.gameobjectsDictonary.TryGetValue(idInt , out  GameObject go))
+                if (_lastData.gameobjectsDictonary.TryGetValue(idInt , out  GameObject go))
                 {
                     sb.AppendLine("<html>");
                     {
-                        await UnityCallbackUpdate.OnUpdateFromMainThreadAsync(() =>
+                        await UniTask.SwitchToMainThread();
+                        if (go != null)
                         {
-                            if (go != null)
-                            {
-                                CreateInformationStrings(sb, go);
-                            }
-                            else
-                            {
-                                sb.AppendLine($"<p>Gameobject is not found</p>");
-                            }
-                        });
+                            CreateInformationStrings(sb, go);
+                        }
+                        else
+                        {
+                            sb.AppendLine($"<p>Gameobject is not found</p>");
+                        }
                     }
                     sb.AppendLine("</html>");
                 }
@@ -91,8 +133,9 @@ public class SceneHierarchyInBuild : MonoBehaviour
             sb.AppendLine("</html>");
             finalHtml = sb.ToString();
         }
+        */
 
-        return finalHtml;
+        return responseData;
     }
 
     private void CreateInformationStrings(StringBuilder sb, GameObject go)
@@ -123,7 +166,6 @@ public class SceneHierarchyInBuild : MonoBehaviour
             var type = component.GetType();
             sb.AppendLine($"<p>{component.enabled} - {type.Name}</p>");
         }
-        
     }
 
 

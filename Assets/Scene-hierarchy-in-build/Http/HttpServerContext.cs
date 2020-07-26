@@ -6,6 +6,9 @@ namespace Http
     {
         public string AbsolutePath { get;}
         public HttpListenerContext HttpListenerContext { get;}
+
+        public ResponseData ResponseData { get; set; }
+
         public HttpServerContext(HttpListenerContext httpListenerContext)
         {
             HttpListenerContext = httpListenerContext;

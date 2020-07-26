@@ -11,9 +11,9 @@ namespace Http
         private HttpListener _listener;
         private int _port;
         
-        private Func<HttpServerContext , Task<string>> _onResponseHandler;
+        private Func<HttpServerContext , Task<ResponseData>> _onResponseHandler;
 
-        public HttpServer(int port , Func<HttpServerContext , Task<string>> onResponseHandler)
+        public HttpServer(int port , Func<HttpServerContext , Task<ResponseData>> onResponseHandler)
         {
             _port = port;
             _onResponseHandler = onResponseHandler;
@@ -24,7 +24,7 @@ namespace Http
             Task.Run(WorkThreadAsync);
         }
 
-        private void WorkThreadAsync()
+        private async void WorkThreadAsync()
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Http
 
             while (_listener != null && _listener.IsListening)
             {
-                HttpListenerContext context = _listener?.GetContext();
+                HttpListenerContext context = await _listener.GetContextAsync();
                 HttpServerContext serverContext = new HttpServerContext(context);
                 Task.Run(() =>
                 {
@@ -54,7 +54,7 @@ namespace Http
                 var returnHandler = await _onResponseHandler(listenerContext);
                 
                 HttpListenerResponse response = listenerContext.GetResponse();
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(returnHandler);
+                byte[] buffer = returnHandler.data;
                 response.ContentLength64 = buffer.Length;
                 using (System.IO.Stream output = response.OutputStream)
                 {
