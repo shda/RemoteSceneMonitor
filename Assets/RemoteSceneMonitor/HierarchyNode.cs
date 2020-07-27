@@ -4,6 +4,7 @@ using UnityEngine;
 public class HierarchyNode
 {
     public bool isScene;
+    public bool isEnable;
     public string name;
     public int id;
     public int pId;

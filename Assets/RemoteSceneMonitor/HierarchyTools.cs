@@ -31,6 +31,7 @@ public class HierarchyTools
             pId = -1,
             gameObject = null,
             name = scene.name,
+            isEnable = true,
         };
         
         GetHierarchy(sceneNode , rootObjects , sceneHierarchyData);
@@ -56,6 +57,7 @@ public class HierarchyTools
                     id = children.GetInstanceID(),
                     pId = node.id,
                     isScene = false,
+                    isEnable = children.gameObject.activeSelf,
                 };
                 
                 List<GameObject> childChild = new List<GameObject>();

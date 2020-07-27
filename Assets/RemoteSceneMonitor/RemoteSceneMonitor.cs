@@ -65,7 +65,7 @@ public class RemoteSceneMonitor : MonoBehaviour
 
         string absolutePath = context.AbsolutePath;
         
-        Debug.Log(absolutePath);
+      //  Debug.Log(absolutePath);
 
         if(absolutePath.StartsWith("/json/hierarchy"))
         {
