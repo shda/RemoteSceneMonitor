@@ -71,7 +71,7 @@
 				onRemove: onRemove,
 
         onCollapse: onCollapse,
-				onExpand: onExpand
+				onExpand: onExpand,
       }
     };
 
@@ -110,7 +110,7 @@
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.send();
-		}
+    }
 
     function beforeDrag(treeId, treeNodes) {
 			for (var i=0,l=treeNodes.length; i<l; i++) {
@@ -212,7 +212,7 @@
     </TD>
 
     <TD width=770px align=left valign=top>
-      <IFRAME ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100% height=600px
+      <IFRAME ID="companentFrame" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100% height=600px
               SRC="core/standardData.html"></IFRAME>
     </TD>
   </TR>

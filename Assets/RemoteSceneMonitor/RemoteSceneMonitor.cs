@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 
 public class RemoteSceneMonitor : MonoBehaviour
 {
-    private const string rootResourceFolder = "SceneHierarchyResources";
+    private const string rootResourceFolder = "RemoteSceneMonitorResources";
     
     [SerializeField]
     private HttpServer _httpServer;
