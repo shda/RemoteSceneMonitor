@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using Cysharp.Threading.Tasks;
+using RemoteSceneMonitor.HierarchyScene;
 
 namespace RemoteSceneMonitor
 {

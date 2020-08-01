@@ -1,4 +1,4 @@
-namespace Http
+namespace RemoteSceneMonitor.Http
 {
     public class ResponseData
     {

@@ -1,73 +1,77 @@
 using System.Linq;
 using System.Text;
+using RemoteSceneMonitor.HierarchyScene;
 using UnityEngine;
 
-public static class TreeHtmlMake
+namespace RemoteSceneMonitor
 {
-    public static string InsertCodeInHtml(HierarchyNode rootNode , string templateHtml)
+    public static class TreeHtmlMake
     {
-        string treeHtml = CreateHtmlTree(rootNode);
-        return  templateHtml.Replace("{treeview_insert}", treeHtml);
-    }
+        public static string InsertCodeInHtml(HierarchyNode rootNode , string templateHtml)
+        {
+            string treeHtml = CreateHtmlTree(rootNode);
+            return  templateHtml.Replace("{treeview_insert}", treeHtml);
+        }
     
-    private static string CreateHtmlTree(HierarchyNode rootNode)
-    {
-        StringBuilder finalHtml = new StringBuilder();
-        finalHtml.Append("<ul>");
+        private static string CreateHtmlTree(HierarchyNode rootNode)
         {
-            CreateHtmlNode(rootNode , finalHtml);
-        }
+            StringBuilder finalHtml = new StringBuilder();
+            finalHtml.Append("<ul>");
+            {
+                CreateHtmlNode(rootNode , finalHtml);
+            }
         
-        finalHtml.Append("</ul>");
-        return finalHtml.ToString();
-    }
-
-    private static void CreateHtmlNode(HierarchyNode node , StringBuilder sb)
-    {
-        StringBuilder nodeBuilder = new StringBuilder();
-
-        bool isDisable = node.gameObject == null || !node.gameObject.activeInHierarchy;
-        Color colorLine = Color.black;
-
-        if (isDisable)
-        {
-            colorLine = Color.gray;
+            finalHtml.Append("</ul>");
+            return finalHtml.ToString();
         }
+
+        private static void CreateHtmlNode(HierarchyNode node , StringBuilder sb)
+        {
+            StringBuilder nodeBuilder = new StringBuilder();
+
+            bool isDisable = node.gameObject == null || !node.gameObject.activeInHierarchy;
+            Color colorLine = Color.black;
+
+            if (isDisable)
+            {
+                colorLine = Color.gray;
+            }
  
-        string  colorLineHtml = ColorUtility.ToHtmlStringRGB(colorLine);
+            string  colorLineHtml = ColorUtility.ToHtmlStringRGB(colorLine);
         
-        string nameObject = node.name;
-        int id = node.id;
-        string startLine = $"<li>" +
-                           $"<div>" +
-                                $"<p>" +
-                                    $"<a href=\"#\" class=\"sc\" onclick=\"return UnHide(this)\">&#9660;</a>" +
-                                    $"<a onclick=\"return OpenId({id})\" style=\"color:#{colorLineHtml}\" >{nameObject}</a>" +
-                                $"</p>" +
-                           $"</div>";
+            string nameObject = node.name;
+            int id = node.id;
+            string startLine = $"<li>" +
+                               $"<div>" +
+                               $"<p>" +
+                               $"<a href=\"#\" class=\"sc\" onclick=\"return UnHide(this)\">&#9660;</a>" +
+                               $"<a onclick=\"return OpenId({id})\" style=\"color:#{colorLineHtml}\" >{nameObject}</a>" +
+                               $"</p>" +
+                               $"</div>";
         
-        /*
+            /*
         if (node.gameObject == null || !node.gameObject.activeInHierarchy)
         {
             startLine = $"<li><span class=\"caret\" style=\"color:#AAAAAA\";>{node.name}</span>";
         }
         */
 
-        nodeBuilder.Append(startLine);
-        {
-            if (node.children.Any())
+            nodeBuilder.Append(startLine);
             {
-                nodeBuilder.AppendLine("<ul class=\"cl\">");
+                if (node.children.Any())
                 {
-                    foreach (var hierarchyNode in node.children)
+                    nodeBuilder.AppendLine("<ul class=\"cl\">");
                     {
-                        CreateHtmlNode(hierarchyNode , nodeBuilder);
+                        foreach (var hierarchyNode in node.children)
+                        {
+                            CreateHtmlNode(hierarchyNode , nodeBuilder);
+                        }
                     }
+                    nodeBuilder.AppendLine("</ul>");
                 }
-                nodeBuilder.AppendLine("</ul>");
             }
+            nodeBuilder.Append($"</li>");
+            sb.AppendLine(nodeBuilder.ToString());
         }
-        nodeBuilder.Append($"</li>");
-        sb.AppendLine(nodeBuilder.ToString());
     }
 }

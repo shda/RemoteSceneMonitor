@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CommonSouzM.ApiMonitor
+namespace RemoteSceneMonitor.Utils
 {
     public static class PrettyJson
     {

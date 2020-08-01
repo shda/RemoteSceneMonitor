@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
-namespace Http
+namespace RemoteSceneMonitor.Http
 {
     public class HttpServer : IDisposable
     {

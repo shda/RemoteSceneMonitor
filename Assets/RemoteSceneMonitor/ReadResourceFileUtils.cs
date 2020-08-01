@@ -5,59 +5,62 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ReadResourceFileUtils
+namespace RemoteSceneMonitor
 {
-    private static string GetPlatformPathToStreamingAssets(string path)
+    public class ReadResourceFileUtils
     {
-        string finalPath = Path.Combine(Application.streamingAssetsPath, path);
-
-        if (Application.platform == RuntimePlatform.IPhonePlayer)
+        private static string GetPlatformPathToStreamingAssets(string path)
         {
-            finalPath = "file://" + finalPath;
-        }
+            string finalPath = Path.Combine(Application.streamingAssetsPath, path);
 
-        return finalPath;
-    }
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                finalPath = "file://" + finalPath;
+            }
+
+            return finalPath;
+        }
     
-    public static async Task<FileReadResult> ReadFileFromStreamingAssetsWithPlatform(string fileName)
-    {
-        await UniTask.SwitchToMainThread();
+        public static async Task<FileReadResult> ReadFileFromStreamingAssetsWithPlatform(string fileName)
+        {
+            await UniTask.SwitchToMainThread();
         
-        var finalPath = GetPlatformPathToStreamingAssets(fileName);
-        var fileReadResult = new FileReadResult();
+            var finalPath = GetPlatformPathToStreamingAssets(fileName);
+            var fileReadResult = new FileReadResult();
         
-        UnityWebRequest loadFile = null;
-        try
-        {
-            loadFile =  UnityWebRequest.Get(finalPath);
-            await loadFile.SendWebRequest();
-        }
-        catch (Exception e)
-        {
-            fileReadResult.IsError = true;
-            Debug.LogError($"UnityWebRequest {fileName}");
-        }
-
-        if (loadFile != null && loadFile.isDone)
-        {
-            if (loadFile.isNetworkError || loadFile.isHttpError)
+            UnityWebRequest loadFile = null;
+            try
             {
-                fileReadResult = new FileReadResult()
-                {
-                    error = loadFile.error,
-                    IsError = true,
-                };
+                loadFile =  UnityWebRequest.Get(finalPath);
+                await loadFile.SendWebRequest();
             }
-            else
+            catch (Exception e)
             {
-                fileReadResult = new FileReadResult()
-                {
-                    text = loadFile.downloadHandler.text,
-                    data = loadFile.downloadHandler.data,
-                };
+                fileReadResult.IsError = true;
+                Debug.LogError($"UnityWebRequest {fileName}");
             }
-        }
 
-        return fileReadResult;
+            if (loadFile != null && loadFile.isDone)
+            {
+                if (loadFile.isNetworkError || loadFile.isHttpError)
+                {
+                    fileReadResult = new FileReadResult()
+                    {
+                        error = loadFile.error,
+                        IsError = true,
+                    };
+                }
+                else
+                {
+                    fileReadResult = new FileReadResult()
+                    {
+                        text = loadFile.downloadHandler.text,
+                        data = loadFile.downloadHandler.data,
+                    };
+                }
+            }
+
+            return fileReadResult;
+        }
     }
 }

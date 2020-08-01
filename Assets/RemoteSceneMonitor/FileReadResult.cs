@@ -1,8 +1,11 @@
-public class FileReadResult
+namespace RemoteSceneMonitor
 {
-    public string text;
-    public string error;
-    public byte[] data;
+    public class FileReadResult
+    {
+        public string text;
+        public string error;
+        public byte[] data;
 
-    public bool IsError { get; set; }
+        public bool IsError { get; set; }
+    }
 }

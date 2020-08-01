@@ -1,4 +1,7 @@
-public static class TemplateFileNames
+namespace RemoteSceneMonitor
 {
-    public const string treeHtmlFile = "treeHtmlFile";
+    public static class TemplateFileNames
+    {
+        public const string treeHtmlFile = "treeHtmlFile";
+    }
 }
