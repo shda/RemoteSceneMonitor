@@ -19,18 +19,19 @@ namespace RemoteSceneMonitor
         private SceneHierarchyData _lastSceneHierarchyData;
         private ResourceFileStorage _resourceFileStorage;
         private GameObjectActionHandler _gameObjectActionHandler;
-    
-        [SerializeField]
-        private int port = 1234;
-        [SerializeField]
-        private float updateDelay = 0.2f;
-    
-        public RemoteSceneMonitor()
+        
+        private int _port;
+        private float _updateDelay;
+        
+        public RemoteSceneMonitor(int port, float updateDelay)
         {
+            _port = port;
+            _updateDelay = updateDelay;
+            
             _resourceFileStorage = new ResourceFileStorage(rootResourceFolder);
             _gameObjectActionHandler = new GameObjectActionHandler();
         
-            _httpServer = new HttpServer(port ,OnResponseHandler);
+            _httpServer = new HttpServer(_port ,OnResponseHandler);
             _httpServer.StartAsync();
         }
     
@@ -44,12 +45,15 @@ namespace RemoteSceneMonitor
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+               // Console.WriteLine(e);
             
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(e.Message);
-                sb.AppendLine(e.StackTrace);
-
+              //  StringBuilder sb = new StringBuilder();
+              //  sb.AppendLine(e.Message);
+              //  sb.AppendLine(e.StackTrace);
+                responseData = new ResponseData
+                {
+                    data = ResponseTools.ConvertStringToResponseData(e.Message)
+                };
                 Debug.LogException(e);
             }
 
@@ -131,7 +135,7 @@ namespace RemoteSceneMonitor
         private void CreateInformationStrings(StringBuilder sb, GameObject go)
         {
             string updateDelayString =
-                updateDelay.ToString("0.00", CultureInfo.InvariantCulture);
+                _updateDelay.ToString("0.00", CultureInfo.InvariantCulture);
 
             sb.AppendLine($"<meta http-equiv=\"refresh\" content=\"{updateDelayString}\">");
 

@@ -12,10 +12,9 @@ namespace RemoteSceneMonitor
         
         private RemoteSceneMonitor _remoteSceneMonitor;
 
-
         private void Awake()
         {
-            _remoteSceneMonitor = new RemoteSceneMonitor();
+            _remoteSceneMonitor = new RemoteSceneMonitor(port , updateDelay);
             
 #if UNITY_EDITOR
             Process.Start($"http://localhost:{port}");

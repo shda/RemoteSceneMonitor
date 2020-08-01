@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Specialized;
 using Cysharp.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace RemoteSceneMonitor
 
             if (string.IsNullOrEmpty(actionType))
             {
-                return ResponseTools.ConvertStringToResponseData("Dont find tag \"type\" in query string");
+                throw new Exception("Dont find tag \"type\" in query string");
             }
 
             byte[] finalArray = new byte[0];
@@ -34,7 +35,7 @@ namespace RemoteSceneMonitor
             var idString = queryString.Get("id");
             if (string.IsNullOrEmpty(idString))
             {
-                return ResponseTools.ConvertStringToResponseData("Dont find id in ActionDelete action");
+                throw new Exception("Dont find id in ActionDelete action");
             }
 
             if (int.TryParse(idString, out var idDelete))
@@ -53,22 +54,20 @@ namespace RemoteSceneMonitor
         
             if (string.IsNullOrEmpty(idSourceString))
             {
-                return ResponseTools.ConvertStringToResponseData("Dont find idSource in ActionMove action");
+                throw new Exception("Dont find idSource in ActionMove action");
             }
         
             if (string.IsNullOrEmpty(idDestinationString))
             {
-                return ResponseTools.ConvertStringToResponseData("Dont find idDestination in ActionMove action");
+                throw new Exception("Dont find idDestination in ActionMove action");
             }
 
-            if (int.TryParse(idSourceString, out var idSourceInt) &&
-                int.TryParse(idDestinationString, out var idDestinationInt))
-            {
-                await MoveChildren(idSourceInt , idDestinationInt);
-                return ResponseTools.CreateOkResponse();
-            }
-        
-            return new byte[0];
+            var idSourceInt = int.Parse(idSourceString);
+            var idDestinationInt = int.Parse(idDestinationString);
+            
+            await MoveChildren(idSourceInt , idDestinationInt);
+            
+            return ResponseTools.CreateOkResponse();
         }
     
         private async UniTask DeleteGameObjectById(int idDeleteObject)
