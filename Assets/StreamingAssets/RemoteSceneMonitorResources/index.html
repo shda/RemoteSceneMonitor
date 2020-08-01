@@ -104,12 +104,25 @@
     }
 
     function onRemove(e, treeId, treeNode) {
-
-      var url = "/action/delete/" + treeNode.id;
+      var url = CreateAction({
+        type : "delete",
+        id : treeNode.id
+      });
 
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
+      xhr.open('GET', url);
       xhr.send();
+      xhr.onload = function() {
+        ReloadTree();
+      }
+    }
+
+    function CreateAction(dataParams){
+      return "/action?" + CreateParams(dataParams);
+    }
+
+    function CreateParams(dataParams){
+      return new URLSearchParams(dataParams);
     }
 
     function beforeDrag(treeId, treeNodes) {
@@ -127,12 +140,20 @@
 
     function moveNode(idDragNode , idTargetNode){
 
-      var url = "/action/move/" + idDragNode + "/" + idTargetNode;
+      var url = CreateAction({
+        type : "move",
+        idSource : idDragNode,
+        idDestination : idTargetNode,
+      });
+    //  var url = "/action/move/" + idDragNode + "/" + idTargetNode;
 
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.responseType = 'json';
       xhr.send();
+      xhr.onload = function() {
+        ReloadTree();
+      }
     }
 
     var getJSON = function(url, callback) {
@@ -161,14 +182,18 @@
       })
     });
 
-    function onClickButton(){
+    function ReloadTree(){
       getJSON("/json/hierarchy" , function(err , data){
         if(err === null){
           var nodes = CreateHtmlTree(data.rootNode);
           var t = $("#tree");
           t = $.fn.zTree.init(t, setting, nodes);
         }
-      })
+      });
+    }
+
+    function onClickButton(){
+      ReloadTree();
     }
 
     function CreateHtmlTree(rootNode){
