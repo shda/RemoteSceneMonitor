@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -12,14 +11,12 @@ using Debug = UnityEngine.Debug;
 
 namespace RemoteSceneMonitor
 {
-    public class RemoteSceneMonitor : MonoBehaviour
+    public class RemoteSceneMonitor : IDisposable
     {
         private const string rootResourceFolder = "RemoteSceneMonitorResources";
-    
-        [SerializeField]
+        
         private HttpServer _httpServer;
-
-        private SceneHierarchyData _lastData;
+        private SceneHierarchyData _lastSceneHierarchyData;
         private ResourceFileStorage _resourceFileStorage;
         private GameObjectActionHandler _gameObjectActionHandler;
     
@@ -28,17 +25,13 @@ namespace RemoteSceneMonitor
         [SerializeField]
         private float updateDelay = 0.2f;
     
-        private void Awake()
+        public RemoteSceneMonitor()
         {
             _resourceFileStorage = new ResourceFileStorage(rootResourceFolder);
             _gameObjectActionHandler = new GameObjectActionHandler();
         
             _httpServer = new HttpServer(port ,OnResponseHandler);
             _httpServer.StartAsync();
-
-#if UNITY_EDITOR
-            Process.Start($"http://localhost:{port}");
-#endif
         }
     
         private async Task<ResponseData> OnResponseHandler(HttpServerContext context)
@@ -63,7 +56,7 @@ namespace RemoteSceneMonitor
             return responseData;
         }
 
-        private async UniTask<ResponseData> CreateResponse(HttpServerContext context)
+        private async Task<ResponseData> CreateResponse(HttpServerContext context)
         {
             ResponseData responseData = new ResponseData {data = new byte[0]};
 
@@ -75,9 +68,9 @@ namespace RemoteSceneMonitor
             if(pathWithoutParams.StartsWith("/json/hierarchy"))
             {
                 await UniTask.SwitchToMainThread();
-                _lastData = HierarchyTools.GetHierarchyActiveScene();
+                _lastSceneHierarchyData = HierarchyTools.GetHierarchyActiveScene();
             
-                var json =  JsonConvert.SerializeObject(_lastData , Formatting.Indented);
+                var json =  JsonConvert.SerializeObject(_lastSceneHierarchyData , Formatting.Indented);
                 responseData.data = ResponseTools.ConvertStringToResponseData(json);
             }
             else if(pathWithoutParams.StartsWith("/action"))
@@ -90,7 +83,7 @@ namespace RemoteSceneMonitor
                 StringBuilder sb = new StringBuilder();
                 if (int.TryParse(idStr, out int idInt))
                 {
-                    if (_lastData.gameobjectsDictonary.TryGetValue(idInt , out  GameObject go))
+                    if (_lastSceneHierarchyData.gameobjectsDictonary.TryGetValue(idInt , out  GameObject go))
                     {
                         sb.AppendLine("<html>");
                         {
@@ -162,11 +155,11 @@ namespace RemoteSceneMonitor
                 sb.AppendLine($"<p>{component.enabled} - {type.Name}</p>");
             }
         }
-        
-        private void OnDestroy()
+
+
+        public void Dispose()
         {
-            _httpServer.Dispose();
-            _httpServer = null;
+            _httpServer?.Dispose();
         }
     }
 }
