@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+  <TITLE> Remote scene monitor </TITLE>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+  <SCRIPT type="text/javascript">
+
+  $(document).ready(function(){
+		//	$("#positionX").val("Hello");
+		//	$("#positionY").bind("click", {type:"collapse"}, expandNode);
+		//	$("#positionZ").bind("click", {type:"toggle"}, expandNode);
+    /*
+      SetValuesComponents({
+        x : 100,
+        y : 200,
+        z : 300,
+      });
+    */
+		});
+
+    function SetValuesComponents(positions){
+      $("#positionX").val(positions.x);
+      $("#positionY").val(positions.y);
+      $("#positionZ").val(positions.z);
+    }
+  </SCRIPT>
+</HEAD>
+
+<BODY>
+
+<TABLE border=0 height=200px align=left>
+  <TR>
+    <form>
+      <label for="fname">X:</label>
+      <input type="text" id="positionX" name="fname"><br>
+      <label for="lname">Y:</label>
+      <input type="text" id="positionY" name="lname"><br>
+      <label for="lname">Z:</label>
+      <input type="text" id="positionZ" name="lname"><br>
+    </form>
+  </TR>
+</TABLE>
+
+</BODY>
+</HTML>

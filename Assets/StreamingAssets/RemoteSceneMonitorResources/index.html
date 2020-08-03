@@ -94,11 +94,13 @@
       var zTree = $.fn.zTree.getZTreeObj("tree");
       if (treeNode.isParent) {
       //  zTree.expandNode(treeNode);
-        window.open("id" + treeNode.id  , "testIframe");
+      //  window.open("id" + treeNode.id  , "testIframe");
+        ShowDataToGameObjectById(treeNode.id);
         return false;
       } else {
         //demoIframe.attr("src", treeNode.file + ".html");
-        window.open("id" + treeNode.id  , "testIframe");
+      //  window.open("id" + treeNode.id  , "testIframe");
+        ShowDataToGameObjectById(treeNode.id);
         return true;
       }
     }
@@ -171,16 +173,7 @@
       xhr.send();
     };
 
-    $(document).ready(function () {
-      getJSON("/json/hierarchy" , function(err , data){
-        if(err === null){
-          var t = $("#tree");
-          var nodes = CreateHtmlTree(data.rootNode);
-          t = $.fn.zTree.init(t, setting, nodes);
-          var allChildrens = CreateHtmlTree(data.rootNode);
-        }
-      })
-    });
+
 
     function ReloadTree(){
       getJSON("/json/hierarchy" , function(err , data){
@@ -215,13 +208,68 @@
         else {
           CreateHtmlNode(nodeChild , child.children);
         }
-
       }
     }
 
     function CreateNode(child){
       return {name: child.name, id: child.id , children: [],
       icon:"css/unity_icon.png" , font:{'color': child.isEnable ? '#000000ff' : '#00000055'} , open: openNodes.has(child.id)}
+    }
+
+    $(document).ready(function () {
+      getJSON("/json/hierarchy" , function(err , data){
+        if(err === null){
+          var t = $("#tree");
+          var nodes = CreateHtmlTree(data.rootNode);
+          t = $.fn.zTree.init(t, setting, nodes);
+          var allChildrens = CreateHtmlTree(data.rootNode);
+        }
+      })
+
+/*
+      let timerId = setTimeout(function tick() {
+      //  alert('tick');
+        timerId = setTimeout(tick, 500); // (*)
+
+        $("#companentFrame")
+        SetValuesComponents({
+          x : 100,
+          y : 200,
+          z : 300,
+        });
+
+      }, 500);
+*/
+    });
+
+
+    let timerId;
+
+    function ShowDataToGameObjectById(id){
+
+      clearTimeout(timerId);
+      timerId = setTimeout(function tick() {
+
+        getJSON("/gameObjectInfo?" + CreateParams({id : id}) , function(err , data){
+          if(err === null){
+            SetValuesComponents(data);
+          }
+
+        timerId = setTimeout(tick, 500); // (*)
+      }, 500);
+      });
+    }
+
+
+    function SetValuesComponents(data){
+
+      try {
+        $("#positionX").val(data.position.x);
+        $("#positionY").val(data.position.y);
+        $("#positionZ").val(data.position.z);
+      } catch (e) {
+
+      }
     }
 
   </SCRIPT>
@@ -237,10 +285,23 @@
     </TD>
 
     <TD width=770px align=left valign=top>
-      <IFRAME ID="companentFrame" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100% height=600px
-              SRC="core/standardData.html"></IFRAME>
+      <TABLE border=0 height=200px align=left>
+        <TR>
+          <form>
+            <label for="fname">X:</label>
+            <input type="text" id="positionX" name="fname"><br>
+            <label for="lname">Y:</label>
+            <input type="text" id="positionY" name="lname"><br>
+            <label for="lname">Z:</label>
+            <input type="text" id="positionZ" name="lname"><br>
+          </form>
+        </TR>
+      </TABLE>
     </TD>
   </TR>
+
+
+
 </TABLE>
 
 </BODY>
