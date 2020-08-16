@@ -161,7 +161,9 @@ namespace RemoteSceneMonitor
 
                 GameObjectInfo objectInfo = new GameObjectInfo()
                 {
-                    position = go.transform.position,
+                    position = position,
+                    rotation = rotation,
+                    scale = scale,
                 };
                 
                 var json =  JsonConvert.SerializeObject(objectInfo , Formatting.Indented);

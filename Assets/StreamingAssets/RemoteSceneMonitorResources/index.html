@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE> Remote scene monitor </TITLE>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+  <link rel="stylesheet" href="lib/ztree/css/zTreeStyle/zTreeStyle.css" type="text/css">
   <style>
     body {
       background-color: white;
@@ -25,10 +25,11 @@
       margin-left: 10px;
     }
   </style>
-  <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
-  <script type="text/javascript" src="js/jquery.ztree.core.js"></script>
-	<script type="text/javascript" src="js/jquery.ztree.excheck.js"></script>
-	<script type="text/javascript" src="js/jquery.ztree.exedit.js"></script>
+  <script type="text/javascript" src="lib/ztree/js/jquery-1.4.4.min.js"></script>
+  <script type="text/javascript" src="lib/ztree/js/jquery.ztree.core.js"></script>
+	<script type="text/javascript" src="lib/ztree/js/jquery.ztree.excheck.js"></script>
+	<script type="text/javascript" src="lib/ztree/js/jquery.ztree.exedit.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
   <SCRIPT type="text/javascript">
     <!--
     var zTree;
@@ -158,25 +159,8 @@
       }
     }
 
-    var getJSON = function(url, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.responseType = 'json';
-      xhr.onload = function() {
-        var status = xhr.status;
-        if (status === 200) {
-          callback(null, xhr.response);
-        } else {
-          callback(status, xhr.response);
-        }
-      };
-      xhr.send();
-    };
-
-
-
     function ReloadTree(){
-      getJSON("/json/hierarchy" , function(err , data){
+      utils.getJSON("/json/hierarchy" , function(err , data){
         if(err === null){
           var nodes = CreateHtmlTree(data.rootNode);
           var t = $("#tree");
@@ -213,11 +197,11 @@
 
     function CreateNode(child){
       return {name: child.name, id: child.id , children: [],
-      icon:"css/unity_icon.png" , font:{'color': child.isEnable ? '#000000ff' : '#00000055'} , open: openNodes.has(child.id)}
+      icon:"lib/ztree/css/unity_icon.png" , font:{'color': child.isEnable ? '#000000ff' : '#00000055'} , open: openNodes.has(child.id)}
     }
 
     $(document).ready(function () {
-      getJSON("/json/hierarchy" , function(err , data){
+      utils.getJSON("/json/hierarchy" , function(err , data){
         if(err === null){
           var t = $("#tree");
           var nodes = CreateHtmlTree(data.rootNode);
@@ -225,21 +209,6 @@
           var allChildrens = CreateHtmlTree(data.rootNode);
         }
       })
-
-/*
-      let timerId = setTimeout(function tick() {
-      //  alert('tick');
-        timerId = setTimeout(tick, 500); // (*)
-
-        $("#companentFrame")
-        SetValuesComponents({
-          x : 100,
-          y : 200,
-          z : 300,
-        });
-
-      }, 500);
-*/
     });
 
 
@@ -250,7 +219,7 @@
       clearTimeout(timerId);
       timerId = setTimeout(function tick() {
 
-        getJSON("/gameObjectInfo?" + CreateParams({id : id}) , function(err , data){
+        utils.getJSON("/gameObjectInfo?" + CreateParams({id : id}) , function(err , data){
           if(err === null){
             SetValuesComponents(data);
           }
@@ -262,11 +231,18 @@
 
 
     function SetValuesComponents(data){
-
       try {
         $("#positionX").val(data.position.x);
         $("#positionY").val(data.position.y);
         $("#positionZ").val(data.position.z);
+
+        $("#rotationX").val(data.rotation.x);
+        $("#rotationY").val(data.rotation.y);
+        $("#rotationZ").val(data.rotation.z);
+
+        $("#scaleX").val(data.scale.x);
+        $("#scaleY").val(data.scale.y);
+        $("#scaleZ").val(data.scale.z);
       } catch (e) {
 
       }
@@ -288,12 +264,23 @@
       <TABLE border=0 height=200px align=left>
         <TR>
           <form>
-            <label for="fname">X:</label>
-            <input type="text" id="positionX" name="fname"><br>
-            <label for="lname">Y:</label>
-            <input type="text" id="positionY" name="lname"><br>
-            <label for="lname">Z:</label>
-            <input type="text" id="positionZ" name="lname"><br>
+            <label>Position:</label></br>
+            <label>X:</label><input type="text" id="positionX">
+            <label>Y:</label><input type="text" id="positionY">
+            <label>Z:</label><input type="text" id="positionZ"></br>
+
+            <label>Rotation:</label></br>
+            <label>X:</label><input type="text" id="rotationX">
+            <label>Y:</label><input type="text" id="rotationY">
+            <label>Z:</label><input type="text" id="rotationZ"></br>
+
+            <label>Scale:</label></br>
+            <label>X:</label><input type="text" id="scaleX">
+            <label>Y:</label><input type="text" id="scaleY">
+            <label>Z:</label><input type="text" id="scaleZ">
+          </form>
+          <form>
+
           </form>
         </TR>
       </TABLE>
