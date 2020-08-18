@@ -29,176 +29,13 @@
   <script type="text/javascript" src="lib/ztree/js/jquery.ztree.core.js"></script>
 	<script type="text/javascript" src="lib/ztree/js/jquery.ztree.excheck.js"></script>
 	<script type="text/javascript" src="lib/ztree/js/jquery.ztree.exedit.js"></script>
+
   <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/objectsInfo.js"></script>
+  <script type="text/javascript" src="js/hierarchyObjects.js"></script>
+
   <SCRIPT type="text/javascript">
-    <!--
-    var zTree;
-    var demoIframe;
 
-    var setting = {
-      view: {
-        dblClickExpand: false,
-        showLine: true,
-        selectedMulti: false,
-
-        fontCss: getFont,
-				nameIsHTML: true
-      },
-      data: {
-        simpleData: {
-          enable: true,
-          idKey: "id",
-          pIdKey: "pId",
-          rootPId: ""
-        }
-      },
-      edit: {
-				enable: true,
-				showRemoveBtn: true,
-				showRenameBtn: false,
-        drag: {
-          isCopy: false,
-          isMove: true,
-          prev: true,
-          iner: true,
-          next: true,
-        }
-			},
-      callback: {
-        beforeClick: beforeClick,
-        beforeDrag: beforeDrag,
-				beforeDrop: beforeDrop,
-
-				onRemove: onRemove,
-
-        onCollapse: onCollapse,
-				onExpand: onExpand,
-      }
-    };
-
-    var openNodes = new Set();
-
-    function getFont(treeId, node) {
-			return node.font ? node.font : {};
-		}
-
-    function onCollapse(event, treeId, treeNode) {
-			openNodes.delete(treeNode.id);
-		}
-
-    function onExpand(event, treeId, treeNode) {
-		    openNodes.add(treeNode.id);
-		}
-
-    function beforeClick(treeId, treeNode)
-    {
-      var zTree = $.fn.zTree.getZTreeObj("tree");
-      if (treeNode.isParent) {
-      //  zTree.expandNode(treeNode);
-      //  window.open("id" + treeNode.id  , "testIframe");
-        ShowDataToGameObjectById(treeNode.id);
-        return false;
-      } else {
-        //demoIframe.attr("src", treeNode.file + ".html");
-      //  window.open("id" + treeNode.id  , "testIframe");
-        ShowDataToGameObjectById(treeNode.id);
-        return true;
-      }
-    }
-
-    function onRemove(e, treeId, treeNode) {
-      var url = CreateAction({
-        type : "delete",
-        id : treeNode.id
-      });
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url);
-      xhr.send();
-      xhr.onload = function() {
-        ReloadTree();
-      }
-    }
-
-    function CreateAction(dataParams){
-      return "/action?" + CreateParams(dataParams);
-    }
-
-    function CreateParams(dataParams){
-      return new URLSearchParams(dataParams);
-    }
-
-    function beforeDrag(treeId, treeNodes) {
-			for (var i=0,l=treeNodes.length; i<l; i++) {
-				if (treeNodes[i].drag === false) {
-					return false;
-				}
-			}
-			return true;
-		}
-		function beforeDrop(treeId, treeNodes, targetNode, moveType) {
-      moveNode(treeNodes[0].id,targetNode.id);
-			return targetNode ? targetNode.drop !== false : true;
-		}
-
-    function moveNode(idDragNode , idTargetNode){
-
-      var url = CreateAction({
-        type : "move",
-        idSource : idDragNode,
-        idDestination : idTargetNode,
-      });
-    //  var url = "/action/move/" + idDragNode + "/" + idTargetNode;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.responseType = 'json';
-      xhr.send();
-      xhr.onload = function() {
-        ReloadTree();
-      }
-    }
-
-    function ReloadTree(){
-      utils.getJSON("/json/hierarchy" , function(err , data){
-        if(err === null){
-          var nodes = CreateHtmlTree(data.rootNode);
-          var t = $("#tree");
-          t = $.fn.zTree.init(t, setting, nodes);
-        }
-      });
-    }
-
-    function onClickButton(){
-      ReloadTree();
-    }
-
-    function CreateHtmlTree(rootNode){
-      var node = CreateNode(rootNode);
-      CreateHtmlNode(node , rootNode.children);
-      return node;
-    }
-
-    function CreateHtmlNode(node , children){
-      if(children == null)
-        return ;
-      for (var i = 0; i < children.length; i++) {
-        var child =  children[i];
-        var nodeChild = CreateNode(child);
-        node.children.push(nodeChild);
-        if(child.children == null){
-          nodeChild.children = null;
-        }
-        else {
-          CreateHtmlNode(nodeChild , child.children);
-        }
-      }
-    }
-
-    function CreateNode(child){
-      return {name: child.name, id: child.id , children: [],
-      icon:"lib/ztree/css/unity_icon.png" , font:{'color': child.isEnable ? '#000000ff' : '#00000055'} , open: openNodes.has(child.id)}
-    }
 
     $(document).ready(function () {
       utils.getJSON("/json/hierarchy" , function(err , data){
@@ -206,47 +43,9 @@
           var t = $("#tree");
           var nodes = CreateHtmlTree(data.rootNode);
           t = $.fn.zTree.init(t, setting, nodes);
-          var allChildrens = CreateHtmlTree(data.rootNode);
         }
       })
     });
-
-
-    let timerId;
-
-    function ShowDataToGameObjectById(id){
-
-      clearTimeout(timerId);
-      timerId = setTimeout(function tick() {
-
-        utils.getJSON("/gameObjectInfo?" + CreateParams({id : id}) , function(err , data){
-          if(err === null){
-            SetValuesComponents(data);
-          }
-
-        timerId = setTimeout(tick, 500); // (*)
-      }, 500);
-      });
-    }
-
-
-    function SetValuesComponents(data){
-      try {
-        $("#positionX").val(data.position.x);
-        $("#positionY").val(data.position.y);
-        $("#positionZ").val(data.position.z);
-
-        $("#rotationX").val(data.rotation.x);
-        $("#rotationY").val(data.rotation.y);
-        $("#rotationZ").val(data.rotation.z);
-
-        $("#scaleX").val(data.scale.x);
-        $("#scaleY").val(data.scale.y);
-        $("#scaleZ").val(data.scale.z);
-      } catch (e) {
-
-      }
-    }
 
   </SCRIPT>
 </HEAD>
