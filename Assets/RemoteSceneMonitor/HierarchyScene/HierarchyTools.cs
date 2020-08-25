@@ -19,7 +19,7 @@ namespace RemoteSceneMonitor.HierarchyScene
         {
             var allGameObjects = new Dictionary<int, GameObject>();
             var listRootScenes = new List<HierarchyNode>(SceneManager.sceneCount);
-            
+
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);

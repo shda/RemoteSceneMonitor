@@ -172,7 +172,6 @@ function CreateNode(child){
     name: child.name,
     id: child.id ,
     children: [],
-    icon:"lib/ztree/css/scene_icon.png" ,
     font:{
       'color': child.isEnable ? '#000000ff' : '#00000055'
     } ,
@@ -181,10 +180,10 @@ function CreateNode(child){
   };
 
   if(child.isScene){
-    node.icon = "lib/ztree/css/scene_icon.png";
+    node.icon = "images/scene_icon.png";
   }
   else{
-    node.icon = "lib/ztree/css/object_icon.png";
+    node.icon = "images/object_icon.png";
   }
 
   return node;
