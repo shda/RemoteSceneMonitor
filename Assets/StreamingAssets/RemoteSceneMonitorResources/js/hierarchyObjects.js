@@ -157,6 +157,13 @@ function CreateHtmlNode(node , children){
 }
 
 function CreateNode(child){
-  return {name: child.name, id: child.id , children: [],
-  icon:"lib/ztree/css/unity_icon.png" , font:{'color': child.isEnable ? '#000000ff' : '#00000055'} , open: openNodes.has(child.id)}
+  return {
+    name: child.name,
+    id: child.id ,
+    children: [],
+    icon:"lib/ztree/css/unity_icon.png" ,
+    font:{
+      'color': child.isEnable ? '#000000ff' : '#00000055'
+    } ,
+    pen: openNodes.has(child.id)}
 }

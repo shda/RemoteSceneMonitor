@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using RemoteSceneMonitor.HierarchyScene;
+using UnityEngine;
 
 namespace RemoteSceneMonitor
 {
@@ -26,11 +28,44 @@ namespace RemoteSceneMonitor
                 case "move":
                     finalArray = await ActionMove(queryString);
                     break;
+                case "changeTransform":
+                    finalArray = await ActionChangeTransform(queryString);
+                    break;
             }
 
             return finalArray;
         }
 
+        private async Task<byte[]> ActionChangeTransform(NameValueCollection queryString)
+        {
+            var vector = new Vector3(
+                float.Parse(queryString.Get("x")),
+                float.Parse(queryString.Get("y")),
+                float.Parse(queryString.Get("z")));
+            
+            await UniTask.SwitchToMainThread();
+            
+            var idGameObject = int.Parse(queryString.Get("id"));
+            var hierarchy = HierarchyTools.GetHierarchyActiveScene();
+            hierarchy.gameobjectsDictonary.TryGetValue(idGameObject, out var changeGameObject);
+
+            var fieldChange = queryString.Get("transformType");
+            switch (fieldChange)
+            {
+                case "position":
+                    changeGameObject.transform.position = vector;
+                    break;
+                case "rotation":
+                    changeGameObject.transform.rotation = Quaternion.Euler(vector);
+                    break;
+                case "scale":
+                    changeGameObject.transform.localScale = vector;
+                    break;
+            }
+            
+            return ResponseTools.CreateOkResponse();
+        }
+        
         private async UniTask<byte[]> ActionDelete(NameValueCollection queryString)
         {
             var idString = queryString.Get("id");
