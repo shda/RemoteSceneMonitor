@@ -47,11 +47,6 @@ namespace RemoteSceneMonitor
             }
             catch (Exception e)
             {
-               // Console.WriteLine(e);
-            
-              //  StringBuilder sb = new StringBuilder();
-              //  sb.AppendLine(e.Message);
-              //  sb.AppendLine(e.StackTrace);
                 responseData = new ResponseData
                 {
                     data = ResponseTools.ConvertStringToResponseData(e.Message)
@@ -161,6 +156,8 @@ namespace RemoteSceneMonitor
 
                 GameObjectInfo objectInfo = new GameObjectInfo()
                 {
+                    activeSelf = go.activeSelf,
+                    name = go.name,
                     position = position,
                     rotation = rotation,
                     scale = scale,

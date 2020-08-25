@@ -1,4 +1,4 @@
-var timerId;
+var timerId = null;
 var idGameObject;
 
 var positionUi;
@@ -7,18 +7,36 @@ var scaleUi;
 
 function ShowDataToGameObjectById(id){
   idGameObject = id;
-  clearTimeout(timerId);
-  ConnectTransformUi();
-  timerId = setTimeout(function tick() {
 
-    utils.getJSON("/gameObjectInfo?" + CreateParams({id : id}) , function(err , data){
-      if(err === null){
-        SetValuesComponents(data);
-      }
-    timerId = setTimeout(tick, 500); // (*)
-  }, 500);
-  });
+  if(timerId == null){
+      ConnectTransformUi();
+
+      timerId = setTimeout(function tick() {
+        RequestDataToUi(function(){
+          timerId = setTimeout(tick, 500);
+        });
+      })
+  }
+  else{
+    RequestDataToUi();
+  }
 }
+
+function RequestDataToUi(callback){
+  utils.getJSON("/gameObjectInfo?" + CreateParams({id : idGameObject}) , function(err , data){
+    if(err === null && data != null){
+      SetValuesComponents(data);
+    }
+    else{
+      SetValuesComponents(null);
+    }
+    if(callback != null){
+      callback();
+    }
+
+  }, 500);
+}
+
 
 function ConnectTransformUi(){
   function ConnectUi(namesArray , onChangeValue){
@@ -48,9 +66,16 @@ function ConnectTransformUi(){
           }
         }
 
-        setVal(this.x , val.x);
-        setVal(this.y , val.y);
-        setVal(this.z , val.z);
+        if(val != null){
+          setVal(this.x , val.x);
+          setVal(this.y , val.y);
+          setVal(this.z , val.z);
+        }
+        else {
+          setVal(this.x , "");
+          setVal(this.y , "");
+          setVal(this.z , "");
+        }
       },
       onChange : onChangeValue,
     };
@@ -93,7 +118,7 @@ function OnChangeTransformValue(elementUi){
 
   var type = {
     type : "changeTransform",
-    id : idGameObject, 
+    id : idGameObject,
     x : elementUi.x.val(),
     y : elementUi.y.val(),
     z : elementUi.z.val(),
@@ -122,9 +147,20 @@ function OnChangeTransformValue(elementUi){
 
 function SetValuesComponents(data){
   try {
-    positionUi.setXYZ(data.position);
-    rotationUi.setXYZ(data.rotation);
-    scaleUi.setXYZ(data.scale);
+    if(data != null){
+      
+      $("#nameGameObject").text(data.name);
+
+      positionUi.setXYZ(data.position);
+      rotationUi.setXYZ(data.rotation);
+      scaleUi.setXYZ(data.scale);
+    }
+    else {
+      positionUi.setXYZ(null);
+      rotationUi.setXYZ(null);
+      scaleUi.setXYZ(null);
+    }
+
   } catch (e) {
 
   }

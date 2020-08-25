@@ -39,9 +39,9 @@ namespace RemoteSceneMonitor
         private async Task<byte[]> ActionChangeTransform(NameValueCollection queryString)
         {
             var vector = new Vector3(
-                float.Parse(queryString.Get("x")),
-                float.Parse(queryString.Get("y")),
-                float.Parse(queryString.Get("z")));
+                ParseFloatString(queryString.Get("x")),
+                ParseFloatString(queryString.Get("y")),
+                ParseFloatString(queryString.Get("z")));
             
             await UniTask.SwitchToMainThread();
             
@@ -64,6 +64,12 @@ namespace RemoteSceneMonitor
             }
             
             return ResponseTools.CreateOkResponse();
+        }
+
+        private float ParseFloatString(string value)
+        {
+            value = value.Replace(".", ",");
+            return float.Parse(value);
         }
         
         private async UniTask<byte[]> ActionDelete(NameValueCollection queryString)

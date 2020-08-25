@@ -157,7 +157,7 @@ function CreateHtmlNode(node , children){
 }
 
 function CreateNode(child){
-  return {
+  var node = {
     name: child.name,
     id: child.id ,
     children: [],
@@ -165,5 +165,8 @@ function CreateNode(child){
     font:{
       'color': child.isEnable ? '#000000ff' : '#00000055'
     } ,
-    pen: openNodes.has(child.id)}
+    open: openNodes.has(child.id)
+  };
+
+  return node;
 }
