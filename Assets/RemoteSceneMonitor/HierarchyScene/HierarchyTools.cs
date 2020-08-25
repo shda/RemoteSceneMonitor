@@ -26,7 +26,7 @@ namespace RemoteSceneMonitor.HierarchyScene
                 var sceneNode = GetHierarchyByScene(scene , allGameObjects);
                 listRootScenes.Add(sceneNode);
             }
-
+            
             return new SceneHierarchyData()
             {
                 gameobjectsDictonary = allGameObjects,
@@ -36,13 +36,11 @@ namespace RemoteSceneMonitor.HierarchyScene
 
         private static HierarchyNode GetHierarchyByScene(Scene scene , Dictionary<int , GameObject> dictObjects)
         {
-           // SceneHierarchyData sceneHierarchyData = new SceneHierarchyData();
-        
             var rootObjects = scene.GetRootGameObjects();
             HierarchyNode sceneNode = new HierarchyNode
             {
                 isScene = true, 
-                id = 0,
+                id = -scene.buildIndex,
                 pId = -1,
                 gameObject = null,
                 name = scene.name,
@@ -50,8 +48,6 @@ namespace RemoteSceneMonitor.HierarchyScene
             };
         
             GetHierarchy(sceneNode , rootObjects , dictObjects);
-            //sceneHierarchyData.sceneNodes = sceneNode;
-        
             return sceneNode;
         }
 

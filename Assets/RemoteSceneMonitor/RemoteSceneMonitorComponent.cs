@@ -11,9 +11,18 @@ namespace RemoteSceneMonitor
         private float updateDelay = 0.2f;
         
         private RemoteSceneMonitor _remoteSceneMonitor;
+        private static RemoteSceneMonitorComponent instance;
 
         private void Awake()
         {
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            
             _remoteSceneMonitor = new RemoteSceneMonitor(port , updateDelay);
             
 #if UNITY_EDITOR
@@ -21,6 +30,7 @@ namespace RemoteSceneMonitor
 #endif
             DontDestroyOnLoad(gameObject);
         }
+        
         
         private void OnDestroy()
         {

@@ -20,7 +20,7 @@ var setting = {
   },
   edit: {
     enable: true,
-    showRemoveBtn: true,
+    showRemoveBtn: showRemoveBtn,
     showRenameBtn: false,
     drag: {
       isCopy: false,
@@ -52,6 +52,10 @@ function onCollapse(event, treeId, treeNode) {
   openNodes.delete(treeNode.id);
 }
 
+function showRemoveBtn(treeId, treeNode){
+    return treeNode.drag;
+}
+
 function onExpand(event, treeId, treeNode) {
     openNodes.add(treeNode.id);
 }
@@ -69,6 +73,7 @@ function beforeClick(treeId, treeNode)
 }
 
 function onRemove(e, treeId, treeNode) {
+
   var url = CreateAction({
     type : "delete",
     id : treeNode.id
@@ -167,12 +172,20 @@ function CreateNode(child){
     name: child.name,
     id: child.id ,
     children: [],
-    icon:"lib/ztree/css/unity_icon.png" ,
+    icon:"lib/ztree/css/scene_icon.png" ,
     font:{
       'color': child.isEnable ? '#000000ff' : '#00000055'
     } ,
+    drag: !child.isScene,
     open: openNodes.has(child.id)
   };
+
+  if(child.isScene){
+    node.icon = "lib/ztree/css/scene_icon.png";
+  }
+  else{
+    node.icon = "lib/ztree/css/object_icon.png";
+  }
 
   return node;
 }

@@ -34,7 +34,7 @@ namespace RemoteSceneMonitor
                 loadFile =  UnityWebRequest.Get(finalPath);
                 await loadFile.SendWebRequest();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 fileReadResult.IsError = true;
                 Debug.LogError($"UnityWebRequest {fileName}");
