@@ -51,7 +51,7 @@ namespace RemoteSceneMonitor
                 {
                     data = ResponseTools.ConvertStringToResponseData(e.Message)
                 };
-                Debug.LogException(e);
+                Debug.LogWarning(e.Message);
             }
 
             return responseData;

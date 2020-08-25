@@ -123,7 +123,7 @@ function moveNode(idDragNode , idTargetNode){
 function ReloadTree(){
   utils.getJSON("/json/hierarchy" , function(err , data){
     if(err === null){
-      var nodes = CreateHtmlTree(data.rootNode);
+      var nodes = CreateHtmlTree(data.scenesRootNodesList);
       var t = $("#tree");
       t = $.fn.zTree.init(t, setting, nodes);
     }
@@ -134,10 +134,16 @@ function onClickButton(){
   ReloadTree();
 }
 
-function CreateHtmlTree(rootNode){
-  var node = CreateNode(rootNode);
-  CreateHtmlNode(node , rootNode.children);
-  return node;
+function CreateHtmlTree(scenesNode){
+  var listRootSceneNodes = [];
+  for (var i = 0; i < scenesNode.length; i++) {
+    var sceneNodeRoot = scenesNode[i];
+    var node = CreateNode(sceneNodeRoot);
+    CreateHtmlNode(node , sceneNodeRoot.children);
+    listRootSceneNodes.push(node);
+  }
+
+  return listRootSceneNodes;
 }
 
 function CreateHtmlNode(node , children){

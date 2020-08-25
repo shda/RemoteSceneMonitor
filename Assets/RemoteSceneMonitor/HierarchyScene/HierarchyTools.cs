@@ -10,20 +10,33 @@ namespace RemoteSceneMonitor.HierarchyScene
     {
         [JsonIgnore]
         public Dictionary<int , GameObject> gameobjectsDictonary = new Dictionary<int, GameObject>();
-        public HierarchyNode rootNode;
+        public HierarchyNode[] scenesRootNodesList;
     }
-
+    
     public class HierarchyTools
     {
         public static SceneHierarchyData GetHierarchyActiveScene()
         {
-            var activeScene = SceneManager.GetActiveScene();
-            return GetHierarchyByScene(activeScene);
+            var allGameObjects = new Dictionary<int, GameObject>();
+            var listRootScenes = new List<HierarchyNode>(SceneManager.sceneCount);
+            
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                var sceneNode = GetHierarchyByScene(scene , allGameObjects);
+                listRootScenes.Add(sceneNode);
+            }
+
+            return new SceneHierarchyData()
+            {
+                gameobjectsDictonary = allGameObjects,
+                scenesRootNodesList = listRootScenes.ToArray(),
+            };
         }
-    
-        public static SceneHierarchyData GetHierarchyByScene(Scene scene)
+
+        private static HierarchyNode GetHierarchyByScene(Scene scene , Dictionary<int , GameObject> dictObjects)
         {
-            SceneHierarchyData sceneHierarchyData = new SceneHierarchyData();
+           // SceneHierarchyData sceneHierarchyData = new SceneHierarchyData();
         
             var rootObjects = scene.GetRootGameObjects();
             HierarchyNode sceneNode = new HierarchyNode
@@ -36,13 +49,13 @@ namespace RemoteSceneMonitor.HierarchyScene
                 isEnable = true,
             };
         
-            GetHierarchy(sceneNode , rootObjects , sceneHierarchyData);
-            sceneHierarchyData.rootNode = sceneNode;
+            GetHierarchy(sceneNode , rootObjects , dictObjects);
+            //sceneHierarchyData.sceneNodes = sceneNode;
         
-            return sceneHierarchyData;
+            return sceneNode;
         }
 
-        public static void GetHierarchy(HierarchyNode node , IEnumerable<GameObject> childGameObjects , SceneHierarchyData sceneHierarchyData)
+        private static void GetHierarchy(HierarchyNode node , IEnumerable<GameObject> childGameObjects , Dictionary<int , GameObject> dictObjects)
         {
             List<HierarchyNode> childNodes = new List<HierarchyNode>();
         
@@ -50,7 +63,7 @@ namespace RemoteSceneMonitor.HierarchyScene
             {
                 foreach (var children in childGameObjects)
                 {
-                    sceneHierarchyData.gameobjectsDictonary[children.GetInstanceID()] = children;
+                    dictObjects[children.GetInstanceID()] = children;
                 
                     HierarchyNode nodeChild = new HierarchyNode()
                     {
@@ -70,7 +83,7 @@ namespace RemoteSceneMonitor.HierarchyScene
                         childChild.Add(childTransform.gameObject);   
                     }
                 
-                    GetHierarchy(nodeChild , childChild , sceneHierarchyData);
+                    GetHierarchy(nodeChild , childChild , dictObjects);
                     childNodes.Add(nodeChild);
                 }
             }

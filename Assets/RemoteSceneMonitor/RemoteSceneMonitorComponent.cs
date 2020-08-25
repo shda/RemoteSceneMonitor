@@ -19,6 +19,7 @@ namespace RemoteSceneMonitor
 #if UNITY_EDITOR
             Process.Start($"http://localhost:{port}");
 #endif
+            DontDestroyOnLoad(gameObject);
         }
         
         private void OnDestroy()
