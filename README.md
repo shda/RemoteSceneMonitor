@@ -5,4 +5,4 @@ Features include:
 * remove gameobjects or change parents from game objects on scenes
 * get and change the position, rotation and scale of gameobjects
 
-![](/Images/screenshot.png)
+![](/Screenshots/2_screenshot.png)
