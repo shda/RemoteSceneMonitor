@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace RemoteSceneMonitor
 {
@@ -7,8 +8,12 @@ namespace RemoteSceneMonitor
     {
         [SerializeField]
         private int port = 1234;
+        
+        [Header("Debug")]
         [SerializeField]
-        private float updateDelay = 0.2f;
+        private bool openBrowserAfterPressPlayEditor = true;
+        [SerializeField]
+        private bool logToConsole = true;
         
         private RemoteSceneMonitor _remoteSceneMonitor;
         private static RemoteSceneMonitorComponent instance;
@@ -23,10 +28,14 @@ namespace RemoteSceneMonitor
 
             instance = this;
             
-            _remoteSceneMonitor = new RemoteSceneMonitor(port , updateDelay);
+            LogToConsoleConfig.IsLogToConsole = logToConsole;
+            _remoteSceneMonitor = new RemoteSceneMonitor(port);
             
 #if UNITY_EDITOR
-            Process.Start($"http://localhost:{port}");
+            if (openBrowserAfterPressPlayEditor)
+            {
+                Process.Start($"http://localhost:{port}");
+            }
 #endif
             DontDestroyOnLoad(gameObject);
         }

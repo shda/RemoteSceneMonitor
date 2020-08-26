@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Globalization;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
@@ -23,13 +20,11 @@ namespace RemoteSceneMonitor
         private GameObjectActionHandler _gameObjectActionHandler;
         
         private int _port;
-        private float _updateDelay;
-        
-        public RemoteSceneMonitor(int port, float updateDelay)
+
+        public RemoteSceneMonitor(int port)
         {
             _port = port;
-            _updateDelay = updateDelay;
-            
+
             _resourceFileStorage = new ResourceFileStorage(rootResourceFolder);
             _gameObjectActionHandler = new GameObjectActionHandler();
         
@@ -63,8 +58,11 @@ namespace RemoteSceneMonitor
 
             var pathWithoutParams = context.AbsolutePath;
             var queryString = context.HttpListenerContext.Request.QueryString;
-        
-            Debug.Log(context.HttpListenerContext.Request.RawUrl);
+            
+            if(LogToConsoleConfig.IsLogToConsole)
+            {
+                Debug.Log(context.HttpListenerContext.Request.RawUrl);
+            }
 
             if(pathWithoutParams.StartsWith("/json/hierarchy"))
             {
@@ -81,32 +79,6 @@ namespace RemoteSceneMonitor
             else if (pathWithoutParams.StartsWith("/gameObjectInfo"))
             {
                 responseData.data = await GetGameObjectInfo(queryString);
-            }
-            else if (pathWithoutParams.StartsWith("/id"))
-            {
-                string idStr = pathWithoutParams.Replace("/id", "");
-                StringBuilder sb = new StringBuilder();
-                if (int.TryParse(idStr, out int idInt))
-                {
-                    if (_lastSceneHierarchyData.gameobjectsDictonary.TryGetValue(idInt , out  GameObject go))
-                    {
-                        sb.AppendLine("<html>");
-                        {
-                            await UniTask.SwitchToMainThread();
-                            if (go != null)
-                            {
-                                CreateInformationStrings(sb, go);
-                            }
-                            else
-                            {
-                                sb.AppendLine($"<p>Gameobject is not found</p>");
-                            }
-                        }
-                        sb.AppendLine("</html>");
-                    }
-                }
-            
-                responseData.data = Encoding.UTF8.GetBytes(sb.ToString());
             }
             else
             {
@@ -164,8 +136,12 @@ namespace RemoteSceneMonitor
                 };
                 
                 var json =  JsonConvert.SerializeObject(objectInfo , Formatting.Indented);
-                Debug.Log(json);
                 finalArray = ResponseTools.ConvertStringToResponseData(json);
+
+                if (LogToConsoleConfig.IsLogToConsole)
+                {
+                    Debug.Log(json);
+                }
             }
             else
             {
@@ -174,35 +150,6 @@ namespace RemoteSceneMonitor
             
             return finalArray;
         }
-
-        private void CreateInformationStrings(StringBuilder sb, GameObject go)
-        {
-            string updateDelayString =
-                _updateDelay.ToString("0.00", CultureInfo.InvariantCulture);
-
-            sb.AppendLine($"<meta http-equiv=\"refresh\" content=\"{updateDelayString}\">");
-
-            Vector3 position = go.transform.position;
-            Vector3 rotation = go.transform.rotation.eulerAngles;
-            Vector3 scale = go.transform.localScale;
-            
-            sb.AppendLine($"<p>{go.name}</p>");
-            sb.AppendLine($"<p>Transform</p>");
-            sb.AppendLine($"<p>Position: X = {position.x} Y = {position.y} Z = {position.z}</p>");
-            sb.AppendLine($"<p>Rotation: X = {rotation.x} Y = {rotation.y} Z = {rotation.z}</p>");
-            sb.AppendLine($"<p>Local scale: X = {scale.x} Y = {scale.y} Z = {scale.z}</p>");
-        
-            var getComponents = go.GetComponents<MonoBehaviour>();
-
-            sb.AppendLine($"<p>Components:</p>");
-        
-            foreach (var component in getComponents)
-            {
-                var type = component.GetType();
-                sb.AppendLine($"<p>{component.enabled} - {type.Name}</p>");
-            }
-        }
-
 
         public void Dispose()
         {

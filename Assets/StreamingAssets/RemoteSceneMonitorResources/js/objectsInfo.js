@@ -5,21 +5,35 @@ var positionUi;
 var rotationUi;
 var scaleUi;
 
+var delayUpdate = 500;
+
 function ShowDataToGameObjectById(id){
   idGameObject = id;
-
+  UpdateDelayInput();
   if(timerId == null){
       ConnectTransformUi();
-
       timerId = setTimeout(function tick() {
         RequestDataToUi(function(){
-          timerId = setTimeout(tick, 500);
+          timerId = setTimeout(tick, delayUpdate);
         });
       })
   }
   else{
     RequestDataToUi();
   }
+}
+
+function UpdateDelayInput(){
+  $("#deleyUpdate").change(function() {
+     var value = parseInt($("#deleyUpdate").val());
+     if(Number.isInteger(value)){
+       if(value < 100){
+         value = 100;
+       }
+       delayUpdate = value;
+       $("#deleyUpdate").val(delayUpdate);
+     }
+  });
 }
 
 function RequestDataToUi(callback){
@@ -148,7 +162,7 @@ function OnChangeTransformValue(elementUi){
 function SetValuesComponents(data){
   try {
     if(data != null){
-      
+
       $("#nameGameObject").text(data.name);
 
       positionUi.setXYZ(data.position);
@@ -156,6 +170,8 @@ function SetValuesComponents(data){
       scaleUi.setXYZ(data.scale);
     }
     else {
+      $("#nameGameObject").text("No object selected.");
+
       positionUi.setXYZ(null);
       rotationUi.setXYZ(null);
       scaleUi.setXYZ(null);
