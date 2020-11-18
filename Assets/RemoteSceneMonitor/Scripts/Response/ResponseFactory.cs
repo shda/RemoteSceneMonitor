@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using RemoteSceneMonitor.HierarchyScene;
 using RemoteSceneMonitor.Http;
+using TaskLib;
 
 namespace RemoteSceneMonitor
 {
@@ -29,7 +29,7 @@ namespace RemoteSceneMonitor
             
             if(pathWithoutParams.StartsWith("/json/hierarchy"))
             {
-                await UniTask.SwitchToMainThread();
+                await TaskSwitcher.SwitchToMainThread();
                 _sceneHierarchyData = HierarchyTools.GetHierarchyActiveScene();
                 response = new HierarchyResponse(_sceneHierarchyData);
             }

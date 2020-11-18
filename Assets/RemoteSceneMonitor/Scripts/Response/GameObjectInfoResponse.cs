@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using RemoteSceneMonitor.HierarchyScene;
 using RemoteSceneMonitor.Http;
+using TaskLib;
 using UnityEngine;
 
 namespace RemoteSceneMonitor
@@ -36,7 +36,7 @@ namespace RemoteSceneMonitor
             
             if (_sceneHierarchyData.gameobjectsDictonary.TryGetValue(idInt, out GameObject go))
             {
-                await UniTask.SwitchToMainThread();
+                await TaskSwitcher.SwitchToMainThread();
                 
                 Vector3 position = go.transform.position;
                 Vector3 rotation = go.transform.rotation.eulerAngles;

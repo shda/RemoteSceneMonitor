@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+using TaskLib;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -23,7 +23,7 @@ namespace RemoteSceneMonitor
     
         public static async Task<FileReadResult> ReadFileFromStreamingAssetsWithPlatform(string fileName)
         {
-            await UniTask.SwitchToMainThread();
+            await TaskSwitcher.SwitchToMainThread();
         
             var finalPath = GetPlatformPathToStreamingAssets(fileName);
             var fileReadResult = new FileReadResult();
@@ -32,7 +32,11 @@ namespace RemoteSceneMonitor
             try
             {
                 loadFile =  UnityWebRequest.Get(finalPath);
-                await loadFile.SendWebRequest();
+                var asyncOperation = loadFile.SendWebRequest();
+                while (!asyncOperation.isDone)
+                {
+                    await Task.Delay(25);
+                }
             }
             catch (Exception)
             {

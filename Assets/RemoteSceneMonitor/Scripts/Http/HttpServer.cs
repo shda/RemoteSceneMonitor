@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using TaskLib;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
@@ -21,11 +22,14 @@ namespace RemoteSceneMonitor.Http
 
         public void StartAsync()
         {
-            Task.Run(WorkThreadAsync);
+            //Task.Run(WorkThreadAsync);
+            WorkThreadAsync();
         }
 
         private async void WorkThreadAsync()
         {
+            await TaskSwitcher.SwitchToThreadPool();
+            
             try
             {
                 _listener = new HttpListener();

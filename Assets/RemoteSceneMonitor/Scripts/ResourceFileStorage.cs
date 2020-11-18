@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace RemoteSceneMonitor
 {
@@ -13,7 +13,7 @@ namespace RemoteSceneMonitor
             _rootResourceFolder = rootResourceFolder;
         }
 
-        public async UniTask<FileReadResult> ReadFileFromResource(string fileName)
+        public async Task<FileReadResult> ReadFileFromResource(string fileName)
         {
             string fullPath = _rootResourceFolder + "/" + fileName;
         

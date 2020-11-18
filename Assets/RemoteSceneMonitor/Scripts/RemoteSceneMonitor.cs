@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using RemoteSceneMonitor.HierarchyScene;
 using RemoteSceneMonitor.Http;
+using TaskLib;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -20,8 +20,9 @@ namespace RemoteSceneMonitor
 
         public RemoteSceneMonitor(int port)
         {
+            UnityCallbackUpdate.CreateInstanceIfNeed();
+            
             _port = port;
-
             _responseFactory = new ResponseFactory();
         
             _httpServer = new HttpServer(_port ,OnResponseHandler);

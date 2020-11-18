@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using RemoteSceneMonitor.HierarchyScene;
 using RemoteSceneMonitor.Http;
+using TaskLib;
 using UnityEngine;
 
 namespace RemoteSceneMonitor
@@ -19,7 +19,7 @@ namespace RemoteSceneMonitor
             };
         }
         
-        public async UniTask<byte[]> ActionRequestHandler(NameValueCollection queryString)
+        public async Task<byte[]> ActionRequestHandler(NameValueCollection queryString)
         {
             var actionType = queryString.Get("type");
 
@@ -52,8 +52,8 @@ namespace RemoteSceneMonitor
                 ParseFloatString(queryString.Get("x")),
                 ParseFloatString(queryString.Get("y")),
                 ParseFloatString(queryString.Get("z")));
-            
-            await UniTask.SwitchToMainThread();
+
+            await TaskSwitcher.SwitchToMainThread();
             
             var idGameObject = int.Parse(queryString.Get("id"));
             var hierarchy = HierarchyTools.GetHierarchyActiveScene();
@@ -82,7 +82,7 @@ namespace RemoteSceneMonitor
             return float.Parse(value);
         }
         
-        private async UniTask<byte[]> ActionDelete(NameValueCollection queryString)
+        private async Task<byte[]> ActionDelete(NameValueCollection queryString)
         {
             var idString = queryString.Get("id");
             if (string.IsNullOrEmpty(idString))
@@ -99,7 +99,7 @@ namespace RemoteSceneMonitor
             return new byte[0];
         }
     
-        private async UniTask<byte[]> ActionMove(NameValueCollection queryString)
+        private async Task<byte[]> ActionMove(NameValueCollection queryString)
         {
             var idSourceString = queryString.Get("idSource");
             var idDestinationString = queryString.Get("idDestination");
@@ -122,9 +122,9 @@ namespace RemoteSceneMonitor
             return ResponseTools.CreateOkResponse();
         }
     
-        private async UniTask DeleteGameObjectById(int idDeleteObject)
+        private async Task DeleteGameObjectById(int idDeleteObject)
         {
-            await UniTask.SwitchToMainThread();
+            await TaskSwitcher.SwitchToMainThread();
         
             var hierarchy = HierarchyTools.GetHierarchyActiveScene();
             hierarchy.gameobjectsDictonary.TryGetValue(idDeleteObject, out var deleteObject);
@@ -134,9 +134,9 @@ namespace RemoteSceneMonitor
             }
         }
 
-        private async UniTask MoveChildren(int idMove, int idTarget)
+        private async Task MoveChildren(int idMove, int idTarget)
         {
-            await UniTask.SwitchToMainThread();
+            await TaskSwitcher.SwitchToMainThread();
         
             var hierarchy = HierarchyTools.GetHierarchyActiveScene();
 
