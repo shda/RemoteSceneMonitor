@@ -16,14 +16,7 @@ namespace RemoteSceneMonitor
         public async Task<FileReadResult> ReadFileFromResource(string fileName)
         {
             string fullPath = _rootResourceFolder + "/" + fileName;
-        
-            /*
-        if (_dictCatch.ContainsKey(fullPath))
-        {
-            return _dictCatch[fullPath];
-        }
-        */
-        
+
             var fileResult = await ReadResourceFileUtils.ReadFileFromStreamingAssetsWithPlatform(fullPath);
             if (!fileResult.IsError)
             {

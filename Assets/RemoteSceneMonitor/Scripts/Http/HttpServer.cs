@@ -22,7 +22,6 @@ namespace RemoteSceneMonitor.Http
 
         public void StartAsync()
         {
-            //Task.Run(WorkThreadAsync);
             WorkThreadAsync();
         }
 
@@ -35,24 +34,23 @@ namespace RemoteSceneMonitor.Http
                 _listener = new HttpListener();
                 _listener.Prefixes.Add("http://*:" + _port + "/");
                 _listener.Start();
+                
+                while (_listener != null && _listener.IsListening)
+                {
+                    HttpListenerContext context = await _listener.GetContextAsync();
+                    HttpServerContext serverContext = new HttpServerContext(context);
+                    WorkHandleAsync(serverContext);
+                }
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
-            }
-
-            while (_listener != null && _listener.IsListening)
-            {
-                HttpListenerContext context = await _listener.GetContextAsync();
-                HttpServerContext serverContext = new HttpServerContext(context);
-                Task.Run(() =>
-                {
-                    WorkHandle(serverContext);
-                });
+                //Debug.LogException(ex);
             }
         }
-        private async void WorkHandle(HttpServerContext listenerContext)
+        private async void WorkHandleAsync(HttpServerContext listenerContext)
         {
+            await TaskSwitcher.SwitchToThreadPool();
+            
             if (_onResponseHandler != null)
             {
                 var returnHandler = await _onResponseHandler(listenerContext);
