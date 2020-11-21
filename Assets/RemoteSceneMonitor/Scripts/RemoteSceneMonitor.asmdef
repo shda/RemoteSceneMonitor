@@ -1,7 +1,7 @@
 {
     "name": "RemoteSceneMonitor",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:20b12d4d20bb6bc48b650ec2f85b57b3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

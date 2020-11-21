@@ -41,23 +41,36 @@ namespace RemoteSceneMonitor
                 case "changeTransform":
                     finalArray = await ActionChangeTransform(queryString);
                     break;
+                case "changeEnableGameObject":
+                    finalArray = await ActionChangeEnableGameObject(queryString);
+                    break;
             }
 
             return finalArray;
         }
 
+        private async Task<byte[]> ActionChangeEnableGameObject(NameValueCollection queryString)
+        {
+            await TaskSwitcher.SwitchToMainThread();
+            
+            bool activeGameObject = ParseStringToBool(queryString.Get("activeSelf"));
+            var changeGameObject = GetGameObjectById(queryString.Get("id"));
+
+            changeGameObject.SetActive(activeGameObject);
+            
+            return ResponseTools.CreateOkResponse();
+        }
+
         private async Task<byte[]> ActionChangeTransform(NameValueCollection queryString)
         {
             var vector = new Vector3(
-                ParseFloatString(queryString.Get("x")),
-                ParseFloatString(queryString.Get("y")),
-                ParseFloatString(queryString.Get("z")));
+                ParseStringToFloat(queryString.Get("x")),
+                ParseStringToFloat(queryString.Get("y")),
+                ParseStringToFloat(queryString.Get("z")));
 
             await TaskSwitcher.SwitchToMainThread();
-            
-            var idGameObject = int.Parse(queryString.Get("id"));
-            var hierarchy = HierarchyTools.GetHierarchyActiveScene();
-            hierarchy.gameobjectsDictonary.TryGetValue(idGameObject, out var changeGameObject);
+
+            var changeGameObject = GetGameObjectById(queryString.Get("id"));
 
             var fieldChange = queryString.Get("transformType");
             switch (fieldChange)
@@ -76,7 +89,24 @@ namespace RemoteSceneMonitor
             return ResponseTools.CreateOkResponse();
         }
 
-        private float ParseFloatString(string value)
+        private GameObject GetGameObjectById(string id)
+        {
+            return GetGameObjectById(int.Parse(id));
+        }
+
+        private GameObject GetGameObjectById(int id)
+        {
+            var hierarchy = HierarchyTools.GetHierarchyActiveScene();
+            hierarchy.gameobjectsDictonary.TryGetValue(id, out var changeGameObject);
+            return changeGameObject;
+        }
+
+        private bool ParseStringToBool(string value)
+        {
+            return bool.Parse(value);
+        }
+        
+        private float ParseStringToFloat(string value)
         {
             value = value.Replace(".", ",");
             return float.Parse(value);

@@ -5,6 +5,8 @@ var positionUi;
 var rotationUi;
 var scaleUi;
 
+var activeSelf;
+
 var delayUpdate = 500;
 
 function ShowDataToGameObjectById(id){
@@ -12,6 +14,7 @@ function ShowDataToGameObjectById(id){
   UpdateDelayInput();
   if(timerId == null){
       ConnectTransformUi();
+      ConnectEnableButtonUi();
       timerId = setTimeout(function tick() {
         RequestDataToUi(function(){
           timerId = setTimeout(tick, delayUpdate);
@@ -49,6 +52,21 @@ function RequestDataToUi(callback){
     }
 
   }, 500);
+}
+
+function GetActiveSelf(){
+  return activeSelf[0].checked;
+}
+
+function SetActiveSelf(value){
+  activeSelf[0].checked = value;
+}
+
+function ConnectEnableButtonUi(){
+  activeSelf = $('#activeSelf');
+  activeSelf.change(function(){
+    OnChangeEnableGameobject();
+  });
 }
 
 
@@ -128,11 +146,30 @@ function ConnectTransformUi(){
     OnChangeTransformValue);
 }
 
+function OnChangeEnableGameobject(){
+  var type = {
+    type : "changeEnableGameObject",
+    id : idGameObject,
+    activeSelf : GetActiveSelf(),
+  };
+
+  var url = CreateAction(type);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.responseType = 'json';
+  xhr.send();
+  xhr.onload = function() {
+      ReloadTree();
+  }
+}
+
 function OnChangeTransformValue(elementUi){
 
   var type = {
     type : "changeTransform",
     id : idGameObject,
+    activeSelf : GetActiveSelf(),
     x : elementUi.x.val(),
     y : elementUi.y.val(),
     z : elementUi.z.val(),
@@ -164,14 +201,14 @@ function SetValuesComponents(data){
     if(data != null){
 
       $("#nameGameObject").text(data.name);
-
+      SetActiveSelf(data.activeSelf);
       positionUi.setXYZ(data.position);
       rotationUi.setXYZ(data.rotation);
       scaleUi.setXYZ(data.scale);
     }
     else {
       $("#nameGameObject").text("No object selected.");
-
+      SetActiveSelf(false);
       positionUi.setXYZ(null);
       rotationUi.setXYZ(null);
       scaleUi.setXYZ(null);
