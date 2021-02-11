@@ -52,7 +52,9 @@ namespace RemoteSceneMonitor
                     scale = scale,
                 };
                 
-                var json =  JsonConvert.SerializeObject(objectInfo , Formatting.Indented);
+                var json =  JsonConvert.SerializeObject(objectInfo , Formatting.Indented , new JsonSerializerSettings() {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
                 finalArray = ResponseTools.ConvertStringToResponseData(json);
 
                 if (LogToConsoleConfig.IsLogToConsole)
