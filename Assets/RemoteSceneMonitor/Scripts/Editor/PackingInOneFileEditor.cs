@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -29,22 +30,9 @@ namespace RemoteSceneMonitor.Scripts.Editor
                 packingData.filesDictionary[finalPath] = File.ReadAllBytes(filePath);
             }
 
-            FileStream fs = new FileStream(pathToOutPackingFile, FileMode.Create);
-            BinaryFormatter formatter = new BinaryFormatter();
-            try
-            {
-                formatter.Serialize(fs, packingData);
-            }
-            catch (SerializationException e)
-            {
-                Debug.Log("Failed to serialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
-            }
-
+            string outString = PackingDataSerializer.SerializeToString(packingData);
+            File.WriteAllText(pathToOutPackingFile , outString);
+            
             AssetDatabase.Refresh();
         }
 

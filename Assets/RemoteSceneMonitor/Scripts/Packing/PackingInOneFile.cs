@@ -12,7 +12,7 @@ namespace RemoteSceneMonitor
         [SerializeField]
         private TextAsset packingDataAsset;
 
-        private byte[] _bytes;
+        private string textFromAsset;
         private PackingData _packingData;
         public PackingData PackingData
         {
@@ -32,30 +32,15 @@ namespace RemoteSceneMonitor
 
         private void OnEnable()
         {
-            _bytes = packingDataAsset.bytes;
+            textFromAsset = packingDataAsset.text;
             _packingData = null;
         }
         
         private PackingData LoadingPackingData()
         {
-            PackingData packingData = null;
-            MemoryStream memoryStream = new MemoryStream(_bytes);
- 
-            try
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                packingData = (PackingData) formatter.Deserialize(memoryStream);
-            }
-            catch (SerializationException e)
-            {
-                Debug.LogError("Failed to deserialize. Reason: " + e.Message);
-            }
-            finally
-            {
-                memoryStream.Close();
-            }
-
-            return packingData;
+            var data = PackingDataSerializer.DeserializeFromString(textFromAsset);
+            textFromAsset = "";
+            return data;
         }
 
         public byte[] GetFileBytes(string fileName)
