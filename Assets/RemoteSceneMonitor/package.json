@@ -6,6 +6,6 @@
   "keywords": ["Debug"],
   "description": "Web interface for debug object to scene Unity.",
   "dependencies": {
-	"com.unity.nuget.newtonsoft-json",
+	"com.unity.nuget.newtonsoft-json"
    }
 }
