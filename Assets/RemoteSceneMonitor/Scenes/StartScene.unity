@@ -1206,12 +1206,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2871982345364197800, guid: c7ba124a5b4750148bc9b413afe1bdf3,
-        type: 3}
-      propertyPath: packingInOneFile
-      value: 
-      objectReference: {fileID: 11400000, guid: 6af996c98b0cedf488e76a1c3f47f0f6,
-        type: 2}
     - target: {fileID: 2871982345364197814, guid: c7ba124a5b4750148bc9b413afe1bdf3,
         type: 3}
       propertyPath: m_Name
