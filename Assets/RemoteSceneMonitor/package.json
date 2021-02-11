@@ -3,9 +3,11 @@
   "displayName": "RemoteSceneMonitor",
   "version": "0.1.1",
   "unity": "2019.2",
-  "keywords": ["Debug"],
+  "keywords": [
+    "Debug"
+  ],
   "description": "Web interface for debug object to scene Unity.",
   "dependencies": {
-	"com.unity.nuget.newtonsoft-json"
-   }
+    "com.unity.nuget.newtonsoft-json": "2.0.0"
+  }
 }
