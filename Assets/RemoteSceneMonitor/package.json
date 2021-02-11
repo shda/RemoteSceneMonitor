@@ -1,7 +1,7 @@
 {
   "name": "com.shda.remote-scene-monitor",
   "displayName": "RemoteSceneMonitor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unity": "2019.2",
   "keywords": ["Debug"],
   "description": "Web interface for debug object to scene Unity.",
