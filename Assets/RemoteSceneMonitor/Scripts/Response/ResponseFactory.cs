@@ -13,9 +13,9 @@ namespace RemoteSceneMonitor
         private HttpServerContext _context;
         private ResourceFileStorage _resourceFileStorage;
 
-        public ResponseFactory()
+        public ResponseFactory(PackingInOneFile packingInOneFile = null)
         {
-            _resourceFileStorage = new ResourceFileStorage(RootResourceFolder);
+            _resourceFileStorage = new ResourceFileStorage(RootResourceFolder , packingInOneFile);
         }
         
         public void SetData(HttpServerContext context)

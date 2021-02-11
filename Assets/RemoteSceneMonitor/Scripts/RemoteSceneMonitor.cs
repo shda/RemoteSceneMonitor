@@ -12,18 +12,16 @@ namespace RemoteSceneMonitor
 {
     public class RemoteSceneMonitor : IDisposable
     {
-        private const string rootResourceFolder = "RemoteSceneMonitorResources";
-        
         private HttpServer _httpServer;
         private ResponseFactory _responseFactory;
         private int _port;
 
-        public RemoteSceneMonitor(int port)
+        public RemoteSceneMonitor(int port, PackingInOneFile packingInOneFile)
         {
             UnityCallbackUpdate.CreateInstanceIfNeed();
             
             _port = port;
-            _responseFactory = new ResponseFactory();
+            _responseFactory = new ResponseFactory(packingInOneFile);
         
             _httpServer = new HttpServer(_port ,OnResponseHandler);
             _httpServer.StartAsync();

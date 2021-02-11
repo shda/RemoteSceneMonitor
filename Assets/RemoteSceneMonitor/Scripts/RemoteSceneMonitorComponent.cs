@@ -6,15 +6,12 @@ namespace RemoteSceneMonitor
 {
     public class RemoteSceneMonitorComponent : MonoBehaviour
     {
-        [SerializeField]
-        private int port = 1234;
-        
-        [Header("Debug")]
-        [SerializeField]
-        private bool openBrowserAfterPressPlayEditor = true;
-        [SerializeField]
-        private bool logToConsole = true;
-        
+        [SerializeField] private int port = 1234;
+        [SerializeField] private PackingInOneFile packingInOneFile;
+
+        [Header("Debug")] [SerializeField] private bool openBrowserAfterPressPlayEditor = true;
+        [SerializeField] private bool logToConsole = true;
+
         private RemoteSceneMonitor _remoteSceneMonitor;
         private static RemoteSceneMonitorComponent instance;
 
@@ -27,10 +24,10 @@ namespace RemoteSceneMonitor
             }
 
             instance = this;
-            
+
             LogToConsoleConfig.IsLogToConsole = logToConsole;
-            _remoteSceneMonitor = new RemoteSceneMonitor(port);
-            
+            _remoteSceneMonitor = new RemoteSceneMonitor(port , packingInOneFile);
+
 #if UNITY_EDITOR
             if (openBrowserAfterPressPlayEditor)
             {
@@ -39,8 +36,8 @@ namespace RemoteSceneMonitor
 #endif
             DontDestroyOnLoad(gameObject);
         }
-        
-        
+
+
         private void OnDestroy()
         {
             _remoteSceneMonitor?.Dispose();

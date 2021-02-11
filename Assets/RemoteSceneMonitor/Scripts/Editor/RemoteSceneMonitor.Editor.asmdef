@@ -1,6 +1,9 @@
 {
     "name": "SceneHierarchyInBuild.Editor",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:e9f1ea3ded6d30848bc63770714b7550"
+    ],
     "includePlatforms": [
         "Editor"
     ],

@@ -931,6 +931,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1383699942
@@ -1205,10 +1206,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2871982345364197800, guid: c7ba124a5b4750148bc9b413afe1bdf3,
+        type: 3}
+      propertyPath: packingInOneFile
+      value: 
+      objectReference: {fileID: 11400000, guid: 6af996c98b0cedf488e76a1c3f47f0f6,
+        type: 2}
     - target: {fileID: 2871982345364197814, guid: c7ba124a5b4750148bc9b413afe1bdf3,
         type: 3}
       propertyPath: m_Name
       value: RemoteSceneMonitor
+      objectReference: {fileID: 0}
+    - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
         type: 3}
@@ -1227,6 +1239,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -1239,16 +1256,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2871982345364197815, guid: c7ba124a5b4750148bc9b413afe1bdf3,
         type: 3}

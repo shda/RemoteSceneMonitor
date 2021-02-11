@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   port: 1234
+  packingInOneFile: {fileID: 11400000, guid: 6af996c98b0cedf488e76a1c3f47f0f6, type: 2}
   openBrowserAfterPressPlayEditor: 1
   logToConsole: 0
